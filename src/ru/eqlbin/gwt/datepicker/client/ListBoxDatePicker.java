@@ -79,8 +79,8 @@ public class ListBoxDatePicker extends DatePicker {
         private static final DateTimeFormat yearFormat = 
                                  DateTimeFormat.getFormat("yyyy");
 
-        private String[] monthNames;
-        private String[] years;
+        private String[] monthNames; // список названий месяцев
+        private String[] years;      // список годов доступных для выбора
 
         private final ListBox yearsBox = new ListBox(false);
         private final ListBox monthsBox = new ListBox(false);
@@ -91,18 +91,11 @@ public class ListBoxDatePicker extends DatePicker {
 
         @Override
         protected void setup() {
-            
             initYearsBox();
             initMonthsBox();
-            
-            grid = new Grid(1, 2);
-            grid.setWidget(0, 0, yearsBox);
-            grid.setWidget(0, 1, monthsBox);
-            grid.setStyleName("ListBoxMonthSelector");
-            
-            initWidget(grid);
+            initDatepicker();   
         }
-        
+
         @Override
         protected void onLoad() {
             super.onLoad();
@@ -139,13 +132,13 @@ public class ListBoxDatePicker extends DatePicker {
          * Метод для инициализации {@link #monthsBox}
          */
         private void initMonthsBox() {
-            // Заполняем названия месяцев
+            // Заполняем названия месяцев с учетом локали
             monthNames = LocaleInfo.getCurrentLocale().
                             getDateTimeFormatInfo().monthsShortStandalone();
-            
             for (String month : monthNames) {
                 monthsBox.addItem(month);
             }
+            
             monthsBox.setVisibleItemCount(1);
             monthsBox.addChangeHandler(new ChangeHandler() {
                 @Override
@@ -155,7 +148,19 @@ public class ListBoxDatePicker extends DatePicker {
             });
         }
 
-
+        /**
+         * Метод для инициализации Datepicker. Должен быть вызван после 
+         * {@link #initYearsBox()} и {@link #initMonthsBox()}
+         */
+        private void initDatepicker(){
+            grid = new Grid(1, 2);
+            grid.setWidget(0, 0, yearsBox);
+            grid.setWidget(0, 1, monthsBox);
+            grid.setStyleName("ListBoxMonthSelector");
+            
+            initWidget(grid);
+        }
+        
         /**
          * Метод устанавливает и отображает текущий месяц календаря, 
          * который соответствует значениям установленным в  
@@ -230,7 +235,7 @@ public class ListBoxDatePicker extends DatePicker {
          * 
          */
         private void updateYearsBoxByShifts(){
-            
+            // запоминаем выбранный год
             int selectedIndex = yearsBox.getSelectedIndex();
             String selectedYear = 
                     yearsBox.getItemText(selectedIndex);
@@ -272,7 +277,8 @@ public class ListBoxDatePicker extends DatePicker {
             if (baseYear < 0 || negativeShiftYear < 0 || positiveShiftYear < 0)
                 throw new IllegalArgumentException("All arguments must be positive values");
             
-            // отсекаем отрицательные года, пересчитывая левое смещение
+            // отсекаем возможные отрицательные значения годов, 
+            // пересчитывая левое смещение
             if(baseYear <= negativeShiftYear)
                 negativeShiftYear = 
                     negativeShiftYear - (negativeShiftYear - baseYear) - 1;
