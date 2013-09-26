@@ -12,23 +12,29 @@ import com.google.gwt.user.datepicker.client.DatePicker;
 import com.google.gwt.user.datepicker.client.DefaultCalendarView;
 import com.google.gwt.user.datepicker.client.MonthSelector;
 
+/**
+ * Date picker component which allows to select the current month of the calendar,
+ * using the drop-down list for setting the month and year.
+ * 
+ * @author eqlbin
+ *
+ */
 public class ListBoxDatePicker extends DatePicker {
 
     public ListBoxDatePicker() {
         super(new ListBoxMonthSelector(), new DefaultCalendarView(),
                 new CalendarModel());
-        // по умолчанию устанавливаем 
-        // плавающий диапазон годов
+        // floating range by default
         setFloatingYearsRange(-5, 5);
     }
   
     /**
-     * Метод устанавливает плавающий диапазон годов.
+     * Sets the floating range of years
      * 
-     * @param negativeShift - значение смещения влево относительно 
-     *                        текущего выбранного года. Должно быть < 0.
-     * @param positiveShift - значение смещения вправо относительно 
-     *                        текущего выбранного года. Должно быть > 0.
+     * @param negativeShift - shift to the left relative to 
+     *                        the selected year; must be < 0.
+     * @param positiveShift - shift to the right relative to 
+     *                        the selected year; must be > 0.
      */
     public void setFloatingYearsRange(int negativeShift, int positiveShift) {
         ((ListBoxMonthSelector) getMonthSelector()).setYearsRange(negativeShift, positiveShift, 
@@ -36,10 +42,10 @@ public class ListBoxDatePicker extends DatePicker {
     }
     
     /**
-     * Метод устанавливает фиксированный диапазон годов.
+     * Sets the fixed range of years
      * 
-     * @param first - значение первого года в списке. Должно быть > 0 и <= last.
-     * @param last - значение последнего года в списке. Должно быть > 0 и >= first.
+     * @param first - value of the first year in the list; mast be > 0 and <= last.
+     * @param last - value of the last year in the list; must be > 0 and >= first.
      */
     public void setFixedYearsRange(int first, int last) {
         ((ListBoxMonthSelector) getMonthSelector()).setYearsRange(first, last, 
@@ -47,44 +53,43 @@ public class ListBoxDatePicker extends DatePicker {
     }
 
     /**
-     * Расширяет стандартный {@link com.google.gwt.user.datepicker.client.MonthSelector MonthSelector}
-     * из библиотеки GWT, который устанавливается в качестве компонента для выбора месяца по умолчанию
-     * для {@link com.google.gwt.user.datepicker.client.DatePicker DatePicker}. 
+     * Extends {@link com.google.gwt.user.datepicker.client.MonthSelector MonthSelector}
+     * from GWT library, which is set as component by default 
+     * for {@link com.google.gwt.user.datepicker.client.DatePicker DatePicker}. 
      * 
-     * Предоставляет пользователю возможность выбора текущего мясяца календаря 
+     * Allows to select the current month of the
      * {@link com.google.gwt.user.datepicker.client.DatePicker DatePicker},
-     * используя выпадающий список {@link com.google.gwt.user.client.ui.ListBox ListBox}
-     * для установки года и месяца.
+     * using the drop-down list {@link com.google.gwt.user.client.ui.ListBox ListBox}
+     * for setting the month and year.
      * 
      * @author eqlbin
      *
      */
-    private static class ListBoxMonthSelector extends MonthSelector {
+    public static class ListBoxMonthSelector extends MonthSelector {
 
         /**
+         * Type of the year range for for {@link ListBoxMonthSelector}.<br><br>
          * 
-         * Тип диапазона годов для {@link ListBoxMonthSelector}.<br><br>
-         * 
-         * <b>Fixed</b> - фиксированный диапазон<br>
-         * <b>Floating</b> - плавающий диапазон, который может меняться в 
-         * зависимости от текущего года
-         * 
+         * <b>Fixed</b>    - fixed range<br>
+         * <b>Floating</b> - floating range, which may vary 
+         *                   according to the selected year
          */
-        public static enum YearsRangeType {Fixed, Floating};
-        
-        public YearsRangeType yearsRangeType = YearsRangeType.Fixed;
+        private static enum YearsRangeType {Fixed, Floating};
+        // current type of the years range
+        private YearsRangeType yearsRangeType = YearsRangeType.Fixed;
 
         private static final DateTimeFormat monthFormat = 
                                  DateTimeFormat.getFormat("yyyy-MMM");
         private static final DateTimeFormat yearFormat = 
                                  DateTimeFormat.getFormat("yyyy");
 
-        private String[] monthNames; // список названий месяцев
-        private String[] years;      // список годов доступных для выбора
+        private String[] monthNames; // list of month names
+        private String[] years;      // list of years available for selection
 
         private final ListBox yearsBox = new ListBox(false);
         private final ListBox monthsBox = new ListBox(false);
 
+        // current shifts for floating range
         private int negativeYearShift = -1, positiveYearShift = -1;
 
         private Grid grid;       
@@ -93,7 +98,7 @@ public class ListBoxDatePicker extends DatePicker {
         protected void setup() {
             initYearsBox();
             initMonthsBox();
-            initDatepicker();   
+            initDatePicker();   
         }
 
         @Override
@@ -112,7 +117,7 @@ public class ListBoxDatePicker extends DatePicker {
         }
 
         /**
-         * Метод для инициализации {@link #yearsBox}
+         * Initializes the {@link #yearsBox}
          */
         private void initYearsBox() {
             yearsBox.setVisibleItemCount(1);
@@ -129,7 +134,7 @@ public class ListBoxDatePicker extends DatePicker {
         }
 
         /**
-         * Метод для инициализации {@link #monthsBox}
+         * Initializes the {@link #monthsBox}
          */
         private void initMonthsBox() {
             // Заполняем названия месяцев с учетом локали
@@ -149,10 +154,10 @@ public class ListBoxDatePicker extends DatePicker {
         }
 
         /**
-         * Метод для инициализации Datepicker. Должен быть вызван после 
-         * {@link #initYearsBox()} и {@link #initMonthsBox()}
+         * Initializes the {@link ListBoxDatePicker}. Must be called after 
+         * {@link #initYearsBox()} and {@link #initMonthsBox()}
          */
-        private void initDatepicker(){
+        private void initDatePicker(){
             grid = new Grid(1, 2);
             grid.setWidget(0, 0, yearsBox);
             grid.setWidget(0, 1, monthsBox);
@@ -162,9 +167,9 @@ public class ListBoxDatePicker extends DatePicker {
         }
         
         /**
-         * Метод устанавливает и отображает текущий месяц календаря, 
-         * который соответствует значениям установленным в  
-         * компонентах {@link #yearsBox} и {@link #monthsBox}
+         * Sets and displays the current month of the calendar, 
+         * which corresponds to the values ​​specified in the   
+         * components {@link #yearsBox} and {@link #monthsBox}
          */
         private void updateMonth() {
             setCurrentMonthByListBoxes();
@@ -173,19 +178,17 @@ public class ListBoxDatePicker extends DatePicker {
 
         
         /**
-         * Устанавливает диапазон годов, доступных для выбора в календаре, и его поведение. 
+         * Sets the range of years available for selection in the date picker, and its behavior. 
          * 
-         * @param first - значение первого года в списке, если тип диапазона фиксированный, 
-         *                или значение смещения влево от текущего выбранного года, если
-         *                диапазон плавающий. При фиксированном диапазоне значение должно 
-         *                быть > 0 и <= last, а при плавающем < 0
+         * @param first - the value of the first year on the list, if the type of the range is fixed, 
+         *                or shift to the left of the currently selected year if the range is floating;
+         *                for a fixed range value must be > 0 and <= last, but < 0 if range is floating
          *                
-         * @param last -  значение последнего года в списке, если тип диапазона фиксированный, 
-         *                или значение смещения вправо от текущего выбранного года, если
-         *                диапазон плавающий. При фиксированном диапазоне значение должно 
-         *                быть > 0 и >= first, а при плавающем > 0
+         * @param last -  the value of the last year on the list, if the type of the range is fixed,  
+         *                or shift to the right of the currently selected year if the range is floating;
+         *                for a fixed range value must be > 0 and >= first, but > 0 if range is floating
          *                 
-         * @param type -  тип диапазона, который определяет его поведение
+         * @param type -  range type that defines its behavior
          * 
          * @see YearsRangeType
          */
@@ -205,7 +208,8 @@ public class ListBoxDatePicker extends DatePicker {
                 break;
                 
             case Floating:
-                
+                // various signs for left and right shifts 
+                // are needed for additional verification
                 if (first >= 0) throw 
                     new IllegalArgumentException("First year shift value must be < 0");
                 if (last <= 0) throw 
@@ -225,17 +229,13 @@ public class ListBoxDatePicker extends DatePicker {
             updateMonth();
         }
         
-        
-                
         /**
-         * Метод перестраивает компонент {@link #yearsBox},
-         * используя в качестве базового года текущий выбраный год
-         * в {@link #yearsBox} и ранее установленные значения смещений
-         * {@link #negativeShiftYear} и {@link #positiveYearShift}
-         * 
+         * Rebuilds the component {@link #yearsBox},
+         * using the shifts of years and the currently 
+         * selected year as the base year
          */
         private void updateYearsBoxByShifts(){
-            // запоминаем выбранный год
+            // save the selected year
             int selectedIndex = yearsBox.getSelectedIndex();
             String selectedYear = 
                     yearsBox.getItemText(selectedIndex);
@@ -244,7 +244,7 @@ public class ListBoxDatePicker extends DatePicker {
                     this.negativeYearShift, this.positiveYearShift);
             updateYearsBox();
 
-            // устанавливаем год, который был выбран до перестроения
+            // set the year, which was selected before update
             for (int i = 0; i < yearsBox.getItemCount(); i++) {
                 if (yearsBox.getItemText(i).equals(selectedYear)) {
                     yearsBox.setSelectedIndex(i);
@@ -254,23 +254,19 @@ public class ListBoxDatePicker extends DatePicker {
         }
         
         /**         
-         * 
-         * Метод генерирует и сохраняет в поле {@link #years}
-         * список годов. Генерация списка происходит на основе 
-         * смещений negativeShiftYear и positiveShiftYear относительно 
-         * базового года baseYear.<br><br>
-         * 
-         * Например, чтобы создать список годов от 1990 до 2005 
-         * включительно, нужно выполнить метод:<br><br>
-         * 
+         * Generates and stores in a field {@link #years}
+         * the list of years. Based on shifts relative to the base year.
+         * <br><br>
+         * For example, to create a list of years from 1990 to 2005, inclusive:
+         * <br><br>
          * {@code buildYearsByShifts(2000, 10, 5);}
          * 
-         * @param baseYear - базовый год. Должен быть > 0.
+         * @param baseYear - base year; must be > 0.
          * 
-         * @param negativeShiftYear - смещение влево относительно базового года.
-         *                            Должно быть > 0.
-         * @param positiveShiftYear - смещение вправо относительно базового года. 
-         *                            Должно быть > 0.
+         * @param negativeShiftYear - shift to the left relative to the base year;
+         *                            must be > 0.
+         * @param positiveShiftYear - shift to the right relative to the base year; 
+         *                            must be > 0.
          */
         private void buildYearsByShifts(int baseYear, int negativeShiftYear, int positiveShiftYear){
             
@@ -295,11 +291,11 @@ public class ListBoxDatePicker extends DatePicker {
         
         
         /**
-         * Метод генерирует и сохраняет в поле {@link #years}
-         * список годов от first до last включительно
+         * Generates and stores in a field {@link #years}
+         * a list of years from first to last, inclusive
          * 
-         * @param first - первый год в списке
-         * @param last - последний год в списке
+         * @param first - first year in the list
+         * @param last  - last year in the list
          */
         private void buildYears(int first, int last){
             
@@ -316,8 +312,9 @@ public class ListBoxDatePicker extends DatePicker {
         }
         
         /**
-         * Метод перестраивает компонент {@link #yearsBox}
-         * в соответствии с текущим значением поля {@link #years}
+         * Rebuilds the component {@link #yearsBox}
+         * according with the current value of the 
+         * field {@link #years}
          */
         private void updateYearsBox() {
             this.yearsBox.clear();
@@ -327,9 +324,9 @@ public class ListBoxDatePicker extends DatePicker {
         }
 
         /**
-         * Метод устанавливает значения в компонентах {@link #yearsBox}
-         * и {@link #monthsBox}, которые соответствуют текущему месяцу
-         * календаря
+         * Sets the values ​​in the components {@link #yearsBox}
+         * and {@link #monthsBox}, which correspond to the 
+         * current calendar month
          */
         private void setCurrentMonthInListBoxes() {
 
@@ -366,8 +363,8 @@ public class ListBoxDatePicker extends DatePicker {
         }
         
         /**
-         * Метод устанавливает текущий месяц календаря, основываясь на
-         * значениях, которые указаны в компонентах {@link #yearsBox}
+         * Sets the current calendar month, based on the values 
+         * ​​that are specified in the components {@link #yearsBox}
          * и {@link #monthsBox}
          */
         private void setCurrentMonthByListBoxes() {
@@ -379,9 +376,9 @@ public class ListBoxDatePicker extends DatePicker {
         }
 
         /**
-         * Метод возвращает последний год в {@link #monthsBox}
+         * Returns the last year in {@link #monthsBox}
          * 
-         * @return последний год в {@link #monthsBox}
+         * @return the last year in {@link #monthsBox}
          */
         private int lastYearInBox() {
             return Integer.parseInt(yearsBox.getItemText(yearsBox
@@ -389,12 +386,13 @@ public class ListBoxDatePicker extends DatePicker {
         }
         
         /**
-         * Метод переводит значение года в строку таким образом,
-         * что количество символов в строке всегда равно 4. 
-         * Например, год равный 15 будет преобразован в строку 0015.
+         * Converts the value at the string so that the number 
+         * of characters is always equal to 4. 
          * 
-         * @param year
-         * @return
+         * For example, the year of 15 will be converted to a string 0015.
+         * 
+         * @param year - year to translate
+         * @return year as String
          */
         private String yearToString(int year){
             
