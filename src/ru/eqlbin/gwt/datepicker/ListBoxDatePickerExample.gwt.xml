@@ -22,7 +22,7 @@
 
   <!-- Specify the app entry point class.                         -->
   <!-- <entry-point class='ru.eqlbin.gwt.datepicker.client.Ru_eqlbin_gwt_datepicker'/> -->
-  <entry-point class='ru.eqlbin.gwt.datepicker.client.ListBoxDatePickerProject'/>
+  <entry-point class='ru.eqlbin.gwt.datepicker.client.ListBoxDatePickerExample'/>
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>

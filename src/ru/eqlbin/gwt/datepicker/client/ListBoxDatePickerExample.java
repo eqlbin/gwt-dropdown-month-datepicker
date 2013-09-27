@@ -12,6 +12,7 @@ import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -19,7 +20,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class ListBoxDatePickerProject implements EntryPoint {
+public class ListBoxDatePickerExample implements EntryPoint {
     
 
     /**
@@ -30,21 +31,21 @@ public class ListBoxDatePickerProject implements EntryPoint {
         
         final ListBoxDatePicker datePicker = new ListBoxDatePicker();
         
-        final TextBox currentDateBox = new TextBox();       
+        final TextBox currentDateBox = new TextBox();  
+        final Label firstYearLabel = new Label("First year or left shift:"); 
+        final Label lastYearLabel = new Label("Last year or right shift:"); 
+        final Label selectedDateLabel = new Label("Selected date:");
         final TextBox firstYearBox = new TextBox();
         final TextBox lastYearBox = new TextBox();
-        final Button fixedRangeButton = new Button("Fixed range");
-        final Button floatingRangeButton = new Button("Floating range");
+        final Button fixedRangeButton = new Button("Set fixed range");
+        final Button floatingRangeButton = new Button("Set floating range");
         
         final DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy-MM-dd");
-        
-        
-       // Window.alert(NumberFormat.getFormat("0000").format(5));
-        
-        
+
         VerticalPanel datePickerPanel = new VerticalPanel();
         datePickerPanel.setSpacing(5);
         datePickerPanel.add(datePicker);
+        datePickerPanel.add(selectedDateLabel);
         datePickerPanel.add(currentDateBox);
         
         HorizontalPanel buttonPanel = new HorizontalPanel();
@@ -54,7 +55,9 @@ public class ListBoxDatePickerProject implements EntryPoint {
         
         VerticalPanel yearsRangeChanger = new VerticalPanel();
         yearsRangeChanger.setSpacing(2);
+        yearsRangeChanger.add(firstYearLabel);
         yearsRangeChanger.add(firstYearBox);
+        yearsRangeChanger.add(lastYearLabel);
         yearsRangeChanger.add(lastYearBox);
         yearsRangeChanger.add(buttonPanel);
         
@@ -64,28 +67,40 @@ public class ListBoxDatePickerProject implements EntryPoint {
         mainPanel.add(yearsRangeChanger);
         
         RootPanel.get("datePicker").add(mainPanel);
-        
-       // RootPanel.get("yearsRangeChanger").add(yearsRangeChanger);
-        
+
         fixedRangeButton.addClickHandler(new ClickHandler() {
-            
             @Override
-            public void onClick(ClickEvent event) {
+            public void onClick(ClickEvent event) {               
                 int first = Integer.parseInt(firstYearBox.getValue());
                 int last = Integer.parseInt(lastYearBox.getValue());
+                
+                if(first <= 0 || last <= 0 || first > last ) {
+                    Window.alert("Wrong fixed range of years!" );
+                    return;
+                }
                 
                 datePicker.setFixedYearsRange(first, last);
             }
         });
         
         floatingRangeButton.addClickHandler(new ClickHandler() {
-            
             @Override
             public void onClick(ClickEvent event) {
-                int first = Integer.parseInt(firstYearBox.getValue());
-                int last = Integer.parseInt(lastYearBox.getValue());
+                
+                int leftShift = Integer.parseInt(firstYearBox.getValue());
+                int rightShift = Integer.parseInt(lastYearBox.getValue());
 
-                datePicker.setFloatingYearsRange(first, last);
+                if(leftShift >= 0) {
+                    Window.alert("Wrong left shift value! It must be < 0.");
+                    return;
+                }
+                
+                if(rightShift <= 0) {
+                    Window.alert("Wrong right shift value! It must be > 0.");
+                    return;
+                }
+                
+                datePicker.setFloatingYearsRange(leftShift, rightShift);
             }
         });
         

@@ -44,8 +44,10 @@ public class ListBoxDatePicker extends DatePicker {
     /**
      * Sets the fixed range of years
      * 
-     * @param first - value of the first year in the list; mast be > 0 and <= last.
-     * @param last - value of the last year in the list; must be > 0 and >= first.
+     * @param first - value of the first year in the list; 
+     *                must be > 0 and <= last.
+     * @param last  - value of the last year in the list; 
+     *                must be > 0 and >= first.
      */
     public void setFixedYearsRange(int first, int last) {
         ((ListBoxMonthSelector) getMonthSelector()).setYearsRange(first, last, 
@@ -137,7 +139,7 @@ public class ListBoxDatePicker extends DatePicker {
          * Initializes the {@link #monthsBox}
          */
         private void initMonthsBox() {
-            // Заполняем названия месяцев с учетом локали
+            // localized short month names
             monthNames = LocaleInfo.getCurrentLocale().
                             getDateTimeFormatInfo().monthsShortStandalone();
             for (String month : monthNames) {
