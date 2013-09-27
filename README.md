@@ -6,7 +6,6 @@ of the calendar, using the drop-down list for setting the month and year.
 
 # Using
 ```
-#!java
 ListBoxDatePicker datePicker = new ListBoxDatePicker();
 datePicker.setFixedYearsRange(2005, 2015);
 datePicker.setFloatingYearsRange(leftShift, rightShift);
