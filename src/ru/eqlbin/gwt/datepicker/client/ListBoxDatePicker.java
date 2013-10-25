@@ -24,8 +24,6 @@ public class ListBoxDatePicker extends DatePicker {
     public ListBoxDatePicker() {
         super(new ListBoxMonthSelector(), new DefaultCalendarView(),
                 new CalendarModel());
-        // floating range by default
-        setFloatingYearsRange(-5, 5);
     }
   
     /**
@@ -78,7 +76,7 @@ public class ListBoxDatePicker extends DatePicker {
          */
         private static enum YearsRangeType {Fixed, Floating};
         // current type of the years range
-        private YearsRangeType yearsRangeType = YearsRangeType.Fixed;
+        private YearsRangeType yearsRangeType;
 
         private static final DateTimeFormat monthFormat = 
                                  DateTimeFormat.getFormat("yyyy-MMM");
@@ -98,21 +96,14 @@ public class ListBoxDatePicker extends DatePicker {
 
         @Override
         protected void setup() {
+            
             initYearsBox();
             initMonthsBox();
-            initDatePicker();   
+            initDatePicker(); 
+            
+            setYearsRange(-7, 7, YearsRangeType.Floating);
         }
 
-        @Override
-        protected void onLoad() {
-            super.onLoad();
-            
-            if(yearsRangeType == YearsRangeType.Floating)
-                updateYearsBoxByShifts();
-            
-            setCurrentMonthInListBoxes();  
-        }
-        
         @Override
         protected void refresh() {
             setCurrentMonthInListBoxes();           
@@ -126,10 +117,11 @@ public class ListBoxDatePicker extends DatePicker {
             yearsBox.addChangeHandler(new ChangeHandler() {
                 @Override
                 public void onChange(ChangeEvent event) {
-                                        
-                    if(yearsRangeType == YearsRangeType.Floating)
-                        updateYearsBoxByShifts();
-
+                    if(yearsRangeType == YearsRangeType.Floating) {
+                        buildYearsByShifts(Integer.parseInt(getSelectedYear()), 
+                                           negativeYearShift, positiveYearShift);
+                        updateYearsBox();
+                    }
                     updateMonth();
                 }
             });
@@ -205,7 +197,6 @@ public class ListBoxDatePicker extends DatePicker {
                 this.positiveYearShift = -1;
                 
                 buildYears(first, last);
-                updateYearsBox();
 
                 break;
                 
@@ -220,41 +211,46 @@ public class ListBoxDatePicker extends DatePicker {
                 this.negativeYearShift = Math.abs(first);
                 this.positiveYearShift = last;
 
-                int currentYear = Integer.parseInt(yearFormat.format(getModel().getCurrentMonth()));
+                int currentYear = Integer.parseInt(getCurrentModelYear());
                 buildYearsByShifts(currentYear, negativeYearShift, positiveYearShift);
-                updateYearsBox();
 
                 break;
             }
             
-            setCurrentMonthInListBoxes();          
-            updateMonth();
-        }
-        
-        /**
-         * Rebuilds the component {@link #yearsBox},
-         * using the shifts of years and the currently 
-         * selected year as the base year
-         */
-        private void updateYearsBoxByShifts(){
-            // save the selected year
-            int selectedIndex = yearsBox.getSelectedIndex();
-            String selectedYear = 
-                    yearsBox.getItemText(selectedIndex);
-
-            buildYearsByShifts(Integer.parseInt(selectedYear), 
-                    this.negativeYearShift, this.positiveYearShift);
             updateYearsBox();
-
-            // set the year, which was selected before update
-            for (int i = 0; i < yearsBox.getItemCount(); i++) {
-                if (yearsBox.getItemText(i).equals(selectedYear)) {
-                    yearsBox.setSelectedIndex(i);
-                    break;
-                }
-            }  
+            updateMonth();
+            setCurrentMonthInListBoxes();          
+            
         }
-        
+
+        /**
+         * Rebuilds the component {@link #yearsBox}
+         * according with the current value of the 
+         * field {@link #years}
+         */
+        private void updateYearsBox() {
+            
+            // save the selected year
+            String selectedYear = getSelectedYear();
+            boolean selectedFound = false;
+
+            this.yearsBox.clear();
+            for (int i=0; i<this.years.length; i++) {
+                String year = this.years[i];
+                this.yearsBox.addItem(year);
+                
+                if(year.equals(selectedYear)) {
+                    this.yearsBox.setSelectedIndex(i);
+                    selectedFound = true;
+                }
+            }
+            
+            if(selectedFound) return;
+            
+            // select the middle item if the previous selected year is not found in yearsBox
+            this.yearsBox.setSelectedIndex(this.yearsBox.getItemCount()/2);
+        }
+                
         /**         
          * Generates and stores in a field {@link #years}
          * the list of years. Based on shifts relative to the base year.
@@ -290,8 +286,7 @@ public class ListBoxDatePicker extends DatePicker {
                     this.years[i - firstYear] = yearToString(i);
             } 
         }
-        
-        
+
         /**
          * Generates and stores in a field {@link #years}
          * a list of years from first to last, inclusive
@@ -310,18 +305,6 @@ public class ListBoxDatePicker extends DatePicker {
 
             for (int i = first; i <= last; i++) {
                     this.years[i - first] = yearToString(i);
-            }
-        }
-        
-        /**
-         * Rebuilds the component {@link #yearsBox}
-         * according with the current value of the 
-         * field {@link #years}
-         */
-        private void updateYearsBox() {
-            this.yearsBox.clear();
-            for (String year : this.years) {
-                this.yearsBox.addItem(year);
             }
         }
 
@@ -387,6 +370,21 @@ public class ListBoxDatePicker extends DatePicker {
                     .getItemCount() - 1));
         }
         
+        private String getSelectedYear(){
+            String selectedYear = null;
+            int selectedIndex = yearsBox.getSelectedIndex();
+            
+            if(selectedIndex >= 0)
+                selectedYear = yearsBox.getItemText(selectedIndex);
+            
+            return selectedYear;
+        }
+        
+        private String getCurrentModelYear(){
+            return yearFormat.format(getModel().getCurrentMonth());
+        }
+        
+        
         /**
          * Converts the value at the string so that the number 
          * of characters is always equal to 4. 
@@ -396,7 +394,7 @@ public class ListBoxDatePicker extends DatePicker {
          * @param year - year to translate
          * @return year as String
          */
-        private String yearToString(int year){
+        private static String yearToString(int year){
             
             if(year < 1000) 
                 return NumberFormat.getFormat("0000").format(year);
