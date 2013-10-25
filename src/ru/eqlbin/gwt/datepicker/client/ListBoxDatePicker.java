@@ -271,11 +271,10 @@ public class ListBoxDatePicker extends DatePicker {
             if (baseYear < 0 || negativeShiftYear < 0 || positiveShiftYear < 0)
                 throw new IllegalArgumentException("All arguments must be positive values");
             
-            // отсекаем возможные отрицательные значения годов, 
-            // пересчитывая левое смещение
+            // cut off the possible negative years, 
+            // recalculating the negativeShiftYear
             if(baseYear <= negativeShiftYear)
-                negativeShiftYear = 
-                    negativeShiftYear - (negativeShiftYear - baseYear) - 1;
+                negativeShiftYear = negativeShiftYear - (negativeShiftYear - baseYear) - 1;
 
             int yearsCount = positiveShiftYear + negativeShiftYear + 1;
             int firstYear = baseYear - negativeShiftYear;
