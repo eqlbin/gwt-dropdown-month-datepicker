@@ -64,7 +64,7 @@ public class ListBoxMonthSelector extends MonthSelector {
 
     @Override
     protected void refresh() {
-        setCurrentMonthInListBoxes();           
+        setListBoxesByModel();           
     }
 
     /**
@@ -267,28 +267,32 @@ public class ListBoxMonthSelector extends MonthSelector {
      * and {@link #monthsBox}, which correspond to the current month of the 
      * {@link com.google.gwt.user.datepicker.client.CalendarModel CalendarModel}
      */
-    private void setCurrentMonthInListBoxes() {
+    private void setListBoxesByModel() {
 
         String currentMonth = monthFormat.
                                 format(getModel().getCurrentMonth());
         
         String[] yearAndMonth = currentMonth.split("-");
 
-        if(yearsBox.getItemCount() == 0){
-            yearsBox.addItem(yearFormat.format(getModel()
-                .getCurrentMonth()));
-        }
-        
-        if (lastYearInBox() < Integer.parseInt(yearAndMonth[0])) {
-            yearsBox.setSelectedIndex(yearsBox.getItemCount() - 1);
-            monthsBox.setSelectedIndex(monthsBox.getItemCount() - 1);
-            setModelByListBoxes();
-            return;
-        }
+//        if(yearsBox.getItemCount() == 0){
+//            yearsBox.addItem(yearFormat.format(getModel()
+//                .getCurrentMonth()));
+//        }
+//        
+//        if (lastYearInBox() < Integer.parseInt(yearAndMonth[0])) {
+//            yearsBox.setSelectedIndex(yearsBox.getItemCount() - 1);
+//            monthsBox.setSelectedIndex(monthsBox.getItemCount() - 1);
+//            setModelByListBoxes();
+//            return;
+//        }
 
+        boolean yearSetted = false;
+        boolean monthSetted = false;
+        
         for (int i = 0; i < yearsBox.getItemCount(); i++) {
             if (yearsBox.getItemText(i).equals(yearAndMonth[0])) {
                 yearsBox.setSelectedIndex(i);
+                yearSetted = true;
                 break;
             }
         }
@@ -296,9 +300,16 @@ public class ListBoxMonthSelector extends MonthSelector {
         for (int i = 0; i < monthsBox.getItemCount(); i++) {
             if (monthsBox.getItemText(i).equals(yearAndMonth[1])) {
                 monthsBox.setSelectedIndex(i);
+                monthSetted = true;
                 break;
             }
         }
+        
+        
+        if(!yearSetted || !monthSetted)
+            throw new RuntimeException("Can't set month " + currentMonth + 
+                                       " in " + getClass().getName());
+        
     }
     
     /**
@@ -314,15 +325,15 @@ public class ListBoxMonthSelector extends MonthSelector {
                 monthFormat.parse(year + "-" + month));
     }
 
-    /**
-     * Returns the last year in {@link #monthsBox}
-     * 
-     * @return the last year in {@link #monthsBox}
-     */
-    private int lastYearInBox() {
-        return Integer.parseInt(yearsBox.getItemText(yearsBox
-                .getItemCount() - 1));
-    }
+//    /**
+//     * Returns the last year in {@link #monthsBox}
+//     * 
+//     * @return the last year in {@link #monthsBox}
+//     */
+//    private int lastYearInBox() {
+//        return Integer.parseInt(yearsBox.getItemText(yearsBox
+//                .getItemCount() - 1));
+//    }
     
     private String getSelectedYear(){
         String selectedYear = null;
