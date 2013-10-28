@@ -29,6 +29,7 @@ public class ListBoxDatePicker extends DatePicker {
     public void setFloatingYearsRange(int negativeShift, int positiveShift) {
         ((ListBoxMonthSelector) getMonthSelector()).setYearsRange(negativeShift, positiveShift, 
                                             ListBoxMonthSelector.YearsRangeType.Floating);
+        ((DefaultCalendarView)getView()).refresh();
     }
     
     /**
@@ -42,6 +43,9 @@ public class ListBoxDatePicker extends DatePicker {
     public void setFixedYearsRange(int first, int last) {
         ((ListBoxMonthSelector) getMonthSelector()).setYearsRange(first, last, 
                                             ListBoxMonthSelector.YearsRangeType.Fixed);
+        ((DefaultCalendarView)getView()).refresh();
     }
+    
+   
 
 }

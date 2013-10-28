@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.datepicker.client.MonthSelector;
@@ -51,10 +52,11 @@ public class ListBoxMonthSelector extends MonthSelector {
     private int negativeYearShift = -1, positiveYearShift = -1;
 
     private Grid grid;       
-
+    
+    
     @Override
     protected void setup() {
-        
+
         initMonthsBox();
         initYearsBox();
         initDatePicker(); 
@@ -64,26 +66,9 @@ public class ListBoxMonthSelector extends MonthSelector {
 
     @Override
     protected void refresh() {
-        setListBoxesByModel();           
+        setListBoxesByModel();
     }
 
-    /**
-     * Initializes the {@link #yearsBox}
-     */
-    private void initYearsBox() {
-        yearsBox.setVisibleItemCount(1);
-        yearsBox.addChangeHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent event) {
-                if(yearsRangeType == YearsRangeType.Floating) {
-                    buildYearsByShifts(Integer.parseInt(getSelectedYear()), 
-                                       negativeYearShift, positiveYearShift);
-                    updateYearsBox();
-                }
-                updateDatePicker();
-            }
-        });
-    }
 
     /**
      * Initializes the {@link #monthsBox}
@@ -100,7 +85,25 @@ public class ListBoxMonthSelector extends MonthSelector {
         monthsBox.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
-                updateDatePicker();
+                setModelByListBoxes();
+            }
+        });
+    }
+    
+    /**
+     * Initializes the {@link #yearsBox}
+     */
+    private void initYearsBox() {
+        yearsBox.setVisibleItemCount(1);
+        yearsBox.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                if(yearsRangeType == YearsRangeType.Floating) {
+                    buildYearsByShifts(Integer.parseInt(getSelectedYear()), 
+                                       negativeYearShift, positiveYearShift);
+                    updateYearsBox();
+                }
+                setModelByListBoxes();
             }
         });
     }
@@ -113,21 +116,10 @@ public class ListBoxMonthSelector extends MonthSelector {
         grid.setWidget(0, 0, yearsBox);
         grid.setWidget(0, 1, monthsBox);
         grid.setStyleName("ListBoxMonthSelector");
-        
+
         initWidget(grid);
     }
-    
-    /**
-     * Sets and displays the current month of the DatePicker, 
-     * which corresponds to the values ​​specified in the   
-     * components {@link #yearsBox} and {@link #monthsBox}
-     */
-    private void updateDatePicker() {
-        setModelByListBoxes();
-        refreshAll();
-    }
-
-    
+        
     /**
      * Sets the range of years available for selection in the date picker, and its behavior. 
      * 
@@ -173,9 +165,9 @@ public class ListBoxMonthSelector extends MonthSelector {
 
             break;
         }
-        
+
         updateYearsBox();
-        updateDatePicker();
+        setModelByListBoxes();
     }
 
     /**
