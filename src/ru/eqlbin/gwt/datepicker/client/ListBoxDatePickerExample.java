@@ -7,10 +7,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -30,23 +30,24 @@ public class ListBoxDatePickerExample implements EntryPoint {
         
         
         final ListBoxDatePicker datePicker = new ListBoxDatePicker();
-        
-        final TextBox currentDateBox = new TextBox();  
+
         final Label firstYearLabel = new Label("First year or left shift:"); 
         final Label lastYearLabel = new Label("Last year or right shift:"); 
-        final Label selectedDateLabel = new Label("Selected date:");
+        final Label selectedDateLabel = new Label();
         final TextBox firstYearBox = new TextBox();
         final TextBox lastYearBox = new TextBox();
         final Button fixedRangeButton = new Button("Set fixed range");
         final Button floatingRangeButton = new Button("Set floating range");
-        
+
         final DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy-MM-dd");
 
         VerticalPanel datePickerPanel = new VerticalPanel();
+        datePickerPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+        datePickerPanel.setWidth("100%");
         datePickerPanel.setSpacing(5);
         datePickerPanel.add(datePicker);
         datePickerPanel.add(selectedDateLabel);
-        datePickerPanel.add(currentDateBox);
+        datePickerPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         
         HorizontalPanel buttonPanel = new HorizontalPanel();
         buttonPanel.setSpacing(5);
@@ -54,6 +55,8 @@ public class ListBoxDatePickerExample implements EntryPoint {
         buttonPanel.add(floatingRangeButton);
         
         VerticalPanel yearsRangeChanger = new VerticalPanel();
+        yearsRangeChanger.setWidth("100%");
+        yearsRangeChanger.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
         yearsRangeChanger.setSpacing(2);
         yearsRangeChanger.add(firstYearLabel);
         yearsRangeChanger.add(firstYearBox);
@@ -62,10 +65,11 @@ public class ListBoxDatePickerExample implements EntryPoint {
         yearsRangeChanger.add(buttonPanel);
         
         HorizontalPanel mainPanel = new HorizontalPanel();
+        mainPanel.setWidth("100%");
         mainPanel.setSpacing(10);
         mainPanel.add(datePickerPanel);
         mainPanel.add(yearsRangeChanger);
-        
+
         RootPanel.get("datePicker").add(mainPanel);
 
         fixedRangeButton.addClickHandler(new ClickHandler() {
@@ -103,13 +107,13 @@ public class ListBoxDatePickerExample implements EntryPoint {
                 datePicker.setFloatingYearsRange(leftShift, rightShift);
             }
         });
-        
+
         datePicker.addValueChangeHandler(new ValueChangeHandler<Date>() {
             @Override
             public void onValueChange(ValueChangeEvent<Date> event) {
-                currentDateBox.setValue(dateFormat.format(event.getValue()));     
+                selectedDateLabel.setText("Selected date: " +
+                        dateFormat.format(event.getValue()));
             }
         });
-        
     }
 }
