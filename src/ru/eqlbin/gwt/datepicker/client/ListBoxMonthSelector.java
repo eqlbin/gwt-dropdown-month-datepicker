@@ -135,7 +135,7 @@ public class ListBoxMonthSelector extends MonthSelector {
      * 
      * @see YearsRangeType
      */
-    public void setYearsRange(int first, int last, YearsRangeType type){
+    protected void setYearsRange(int first, int last, YearsRangeType type){
         yearsRangeType = type;
         
         switch (type) {
