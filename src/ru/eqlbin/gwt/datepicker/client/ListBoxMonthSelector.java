@@ -6,7 +6,6 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.datepicker.client.MonthSelector;
@@ -56,11 +55,9 @@ public class ListBoxMonthSelector extends MonthSelector {
     
     @Override
     protected void setup() {
-
-        initMonthsBox();
         initYearsBox();
-        initDatePicker(); 
-
+        initMonthsBox();
+        initMonthSelector(); 
         setYearsRange(-7, 7, YearsRangeType.Floating);
     }
 
@@ -69,6 +66,23 @@ public class ListBoxMonthSelector extends MonthSelector {
         setListBoxesByModel();
     }
 
+    /**
+     * Initializes the {@link #yearsBox}
+     */
+    private void initYearsBox() {
+        yearsBox.setVisibleItemCount(1);
+        yearsBox.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                if(yearsRangeType == YearsRangeType.Floating) {
+                    buildYearsByShifts(Integer.parseInt(getSelectedYear()), 
+                                       negativeYearShift, positiveYearShift);
+                    updateYearsBox();
+                }
+                setModelByListBoxes();
+            }
+        });
+    }
 
     /**
      * Initializes the {@link #monthsBox}
@@ -89,34 +103,16 @@ public class ListBoxMonthSelector extends MonthSelector {
             }
         });
     }
-    
-    /**
-     * Initializes the {@link #yearsBox}
-     */
-    private void initYearsBox() {
-        yearsBox.setVisibleItemCount(1);
-        yearsBox.addChangeHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent event) {
-                if(yearsRangeType == YearsRangeType.Floating) {
-                    buildYearsByShifts(Integer.parseInt(getSelectedYear()), 
-                                       negativeYearShift, positiveYearShift);
-                    updateYearsBox();
-                }
-                setModelByListBoxes();
-            }
-        });
-    }
 
     /**
      * Initializes the {@link ListBoxDatePicker}.
      */
-    private void initDatePicker(){
+    private void initMonthSelector(){
         grid = new Grid(1, 2);
         grid.setWidget(0, 0, yearsBox);
         grid.setWidget(0, 1, monthsBox);
         grid.setStyleName("ListBoxMonthSelector");
-
+    
         initWidget(grid);
     }
         
@@ -146,7 +142,7 @@ public class ListBoxMonthSelector extends MonthSelector {
             this.positiveYearShift = -1;
             
             buildYears(first, last);
-
+    
             break;
             
         case Floating:
@@ -159,13 +155,13 @@ public class ListBoxMonthSelector extends MonthSelector {
             
             this.negativeYearShift = Math.abs(first);
             this.positiveYearShift = last;
-
+    
             int currentYear = Integer.parseInt(getCurrentModelYear());
             buildYearsByShifts(currentYear, negativeYearShift, positiveYearShift);
-
+    
             break;
         }
-
+    
         updateYearsBox();
         setModelByListBoxes();
     }
@@ -213,7 +209,8 @@ public class ListBoxMonthSelector extends MonthSelector {
      * @param positiveShiftYear - shift to the right relative to the base year; 
      *                            must be > 0.
      */
-    private void buildYearsByShifts(int baseYear, int negativeShiftYear, int positiveShiftYear){
+    private void buildYearsByShifts(int baseYear, 
+            int negativeShiftYear, int positiveShiftYear){
         
         if (baseYear < 0 || negativeShiftYear < 0 || positiveShiftYear < 0)
             throw new IllegalArgumentException("All arguments must be positive values");
@@ -259,25 +256,12 @@ public class ListBoxMonthSelector extends MonthSelector {
      * and {@link #monthsBox}, which correspond to the current month of the 
      * {@link com.google.gwt.user.datepicker.client.CalendarModel CalendarModel}
      */
-    private void setListBoxesByModel() {
-
+    private void setListBoxesByModel() {   
         String currentMonth = monthFormat.
                                 format(getModel().getCurrentMonth());
         
         String[] yearAndMonth = currentMonth.split("-");
-
-//        if(yearsBox.getItemCount() == 0){
-//            yearsBox.addItem(yearFormat.format(getModel()
-//                .getCurrentMonth()));
-//        }
-//        
-//        if (lastYearInBox() < Integer.parseInt(yearAndMonth[0])) {
-//            yearsBox.setSelectedIndex(yearsBox.getItemCount() - 1);
-//            monthsBox.setSelectedIndex(monthsBox.getItemCount() - 1);
-//            setModelByListBoxes();
-//            return;
-//        }
-
+    
         boolean yearSetted = false;
         boolean monthSetted = false;
         
@@ -288,7 +272,7 @@ public class ListBoxMonthSelector extends MonthSelector {
                 break;
             }
         }
-
+    
         for (int i = 0; i < monthsBox.getItemCount(); i++) {
             if (monthsBox.getItemText(i).equals(yearAndMonth[1])) {
                 monthsBox.setSelectedIndex(i);
@@ -296,12 +280,10 @@ public class ListBoxMonthSelector extends MonthSelector {
                 break;
             }
         }
-        
-        
+    
         if(!yearSetted || !monthSetted)
             throw new RuntimeException("Can't set month " + currentMonth + 
                                        " in " + getClass().getName());
-        
     }
     
     /**
@@ -312,21 +294,17 @@ public class ListBoxMonthSelector extends MonthSelector {
     private void setModelByListBoxes() {
         String year = yearsBox.getItemText(yearsBox.getSelectedIndex());
         String month = monthsBox.getItemText(monthsBox.getSelectedIndex());
-
+    
         getModel().setCurrentMonth(
                 monthFormat.parse(year + "-" + month));
     }
 
-//    /**
-//     * Returns the last year in {@link #monthsBox}
-//     * 
-//     * @return the last year in {@link #monthsBox}
-//     */
-//    private int lastYearInBox() {
-//        return Integer.parseInt(yearsBox.getItemText(yearsBox
-//                .getItemCount() - 1));
-//    }
-    
+    /**
+     * Returns current selected year in 
+     * the {@link #yearsBox} as String
+     * 
+     * @return current selected year
+     */
     private String getSelectedYear(){
         String selectedYear = null;
         int selectedIndex = yearsBox.getSelectedIndex();
@@ -337,6 +315,13 @@ public class ListBoxMonthSelector extends MonthSelector {
         return selectedYear;
     }
     
+    /**
+     * Returns current year of the 
+     * {@link com.google.gwt.user.datepicker.client.CalendarModel CalendarModel}
+     * as String
+     * 
+     * @return current year of the DatePicker model
+     */
     private String getCurrentModelYear(){
         return yearFormat.format(getModel().getCurrentMonth());
     }
@@ -351,8 +336,7 @@ public class ListBoxMonthSelector extends MonthSelector {
      * @param year - year to translate
      * @return year as String
      */
-    private static String yearToString(int year){
-        
+    private static String yearToString(int year){      
         if(year < 1000) 
             return NumberFormat.getFormat("0000").format(year);
         
