@@ -1,6 +1,5 @@
 package ru.eqlbin.gwt.datepicker.client;
 
-
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.i18n.client.LocaleInfo;
@@ -11,13 +10,15 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.datepicker.client.MonthSelector;
 
 /**
- * Extends {@link com.google.gwt.user.datepicker.client.MonthSelector MonthSelector}
+ * Extends 
+ * {@link com.google.gwt.user.datepicker.client.MonthSelector MonthSelector}
  * from GWT library, which is set as component by default 
  * for {@link com.google.gwt.user.datepicker.client.DatePicker DatePicker}. 
  * 
  * Allows to select the current month of the
  * {@link com.google.gwt.user.datepicker.client.DatePicker DatePicker},
- * using the drop-down list {@link com.google.gwt.user.client.ui.ListBox ListBox}
+ * using the drop-down list 
+ * {@link com.google.gwt.user.client.ui.ListBox ListBox}
  * for setting the month and year.
  * 
  * @author eqlbin
@@ -117,15 +118,22 @@ public class ListBoxMonthSelector extends MonthSelector {
     }
         
     /**
-     * Sets the range of years available for selection in the date picker, and its behavior. 
+     * Sets the range of years available for selection 
+     * in the date picker, and its behavior. 
      * 
-     * @param first - the value of the first year on the list, if the type of the range is fixed, 
-     *                or shift to the left of the currently selected year if the range is floating;
-     *                for a fixed range value must be > 0 and <= last, but < 0 if range is floating
+     * @param first - the value of the first year on the list, 
+     *                if the type of the range is fixed, 
+     *                or shift to the left of the currently 
+     *                selected year if the range is floating;
+     *                for a fixed range value must be > 0 and 
+     *                <= last, but < 0 if range is floating
      *                
-     * @param last -  the value of the last year on the list, if the type of the range is fixed,  
-     *                or shift to the right of the currently selected year if the range is floating;
-     *                for a fixed range value must be > 0 and >= first, but > 0 if range is floating
+     * @param last -  the value of the last year on the list, 
+     *                if the type of the range is fixed,  
+     *                or shift to the right of the currently 
+     *                selected year if the range is floating;
+     *                for a fixed range value must be > 0 and 
+     *                >= first, but > 0 if range is floating
      *                 
      * @param type -  range type that defines its behavior
      * 
@@ -274,7 +282,7 @@ public class ListBoxMonthSelector extends MonthSelector {
         }
     
         for (int i = 0; i < monthsBox.getItemCount(); i++) {
-            if (monthsBox.getItemText(i).equals(yearAndMonth[1])) {
+            if (monthsBox.getItemText(i).equalsIgnoreCase(yearAndMonth[1])) {
                 monthsBox.setSelectedIndex(i);
                 monthSetted = true;
                 break;

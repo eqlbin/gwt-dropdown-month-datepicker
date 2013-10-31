@@ -27,8 +27,7 @@ public class ListBoxDatePickerExample implements EntryPoint {
      * This is the entry point method.
      */
     public void onModuleLoad() {
-        
-        
+
         final ListBoxDatePicker datePicker = new ListBoxDatePicker();
 
         final Label firstYearLabel = new Label("First year or left shift:"); 
@@ -42,12 +41,14 @@ public class ListBoxDatePickerExample implements EntryPoint {
         final DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy-MM-dd");
 
         VerticalPanel datePickerPanel = new VerticalPanel();
-        datePickerPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+        datePickerPanel.
+            setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         datePickerPanel.setWidth("100%");
         datePickerPanel.setSpacing(5);
         datePickerPanel.add(datePicker);
         datePickerPanel.add(selectedDateLabel);
-        datePickerPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+        datePickerPanel.
+            setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         
         HorizontalPanel buttonPanel = new HorizontalPanel();
         buttonPanel.setSpacing(5);
@@ -56,7 +57,8 @@ public class ListBoxDatePickerExample implements EntryPoint {
         
         VerticalPanel yearsRangeChanger = new VerticalPanel();
         yearsRangeChanger.setWidth("100%");
-        yearsRangeChanger.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+        yearsRangeChanger.
+            setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
         yearsRangeChanger.setSpacing(2);
         yearsRangeChanger.add(firstYearLabel);
         yearsRangeChanger.add(firstYearBox);
