@@ -264,12 +264,14 @@ public class ListBoxMonthSelector extends MonthSelector {
      * and {@link #monthsBox}, which correspond to the current month of the 
      * {@link com.google.gwt.user.datepicker.client.CalendarModel CalendarModel}
      */
-    private void setListBoxesByModel() {   
+    private void setListBoxesByModel() { 
+
         String currentMonth = monthFormat.
                                 format(getModel().getCurrentMonth());
         
         String[] yearAndMonth = currentMonth.split("-");
     
+        
         boolean yearSetted = false;
         boolean monthSetted = false;
         
@@ -303,7 +305,7 @@ public class ListBoxMonthSelector extends MonthSelector {
         String year = yearsBox.getItemText(yearsBox.getSelectedIndex());
         String month = monthsBox.getItemText(monthsBox.getSelectedIndex());
     
-        getModel().setCurrentMonth(
+        getDatePicker().setCurrentMonth(
                 monthFormat.parse(year + "-" + month));
     }
 
