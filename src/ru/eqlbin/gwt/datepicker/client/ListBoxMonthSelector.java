@@ -305,8 +305,9 @@ public class ListBoxMonthSelector extends MonthSelector {
         String year = yearsBox.getItemText(yearsBox.getSelectedIndex());
         String month = monthsBox.getItemText(monthsBox.getSelectedIndex());
     
-        getDatePicker().setCurrentMonth(
+        getModel().setCurrentMonth(
                 monthFormat.parse(year + "-" + month));
+        refreshAll();
     }
 
     /**
