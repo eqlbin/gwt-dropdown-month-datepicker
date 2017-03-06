@@ -2,9 +2,12 @@ package ru.eqlbin.gwt.datepicker.client;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -50,6 +53,12 @@ public class ListBoxMonthSelector extends MonthSelector {
     private final ListBox yearsBox = new ListBox(false);
     private final ListBox monthsBox = new ListBox(false);
 
+    private final Button prevMonthButton = new Button("<");
+    private final Button nextMonthButton = new Button(">");
+    
+    private final Button prevYearButton = new Button("<<");
+    private final Button nextYearButton = new Button(">>");
+    
     // current shifts for floating range
     private int negativeYearShift = -1, positiveYearShift = -1;
 
@@ -61,6 +70,7 @@ public class ListBoxMonthSelector extends MonthSelector {
         initYearsBox();
         initMonthsBox();
         initMonthSelector(); 
+        initButtons();        
         setYearsRange(-7, 7, YearsRangeType.Floating);
     }
 
@@ -107,13 +117,52 @@ public class ListBoxMonthSelector extends MonthSelector {
         });
     }
 
+    
+    private void initButtons(){
+        
+        prevYearButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent arg0) {
+                prevYear();
+            }
+        });
+        
+        nextYearButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent arg0) {
+                nextYear();
+            }
+        });
+        
+        prevMonthButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent arg0) {
+                prevMonth();
+            }
+        });
+        
+        nextMonthButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent arg0) {
+                nextMonth();
+            }
+        });
+    }
+    
+    
     /**
      * Initializes the {@link ListBoxDatePicker}.
      */
     private void initMonthSelector(){
-        grid = new Grid(1, 2);
-        grid.setWidget(0, 0, yearsBox);
-        grid.setWidget(0, 1, monthsBox);
+        grid = new Grid(1, 6);
+        
+        grid.setWidget(0, 0, prevYearButton);
+        grid.setWidget(0, 1, prevMonthButton);
+        grid.setWidget(0, 2, yearsBox);
+        grid.setWidget(0, 3, monthsBox);
+        grid.setWidget(0, 4, nextMonthButton);
+        grid.setWidget(0, 5, nextYearButton);
+        
         grid.setStyleName("ListBoxMonthSelector");
     
         HorizontalPanel panel = new HorizontalPanel();
@@ -319,6 +368,71 @@ public class ListBoxMonthSelector extends MonthSelector {
         refreshAll();
     }
 
+    
+    private void nextMonth() {
+        
+        if(monthsBox.getSelectedIndex() == monthsBox.getItemCount() - 1) {
+            monthsBox.setSelectedIndex(0);
+            nextYear();
+            return;
+        }
+        
+        monthsBox.setSelectedIndex(monthsBox.getSelectedIndex() + 1);
+        
+        if(yearsRangeType == YearsRangeType.Floating) {
+            buildYearsByShifts(Integer.parseInt(getSelectedYear()), 
+                               negativeYearShift, positiveYearShift);
+            updateYearsBox();
+        }
+        setModelByListBoxes();
+    }
+    
+    
+    private void prevMonth() {
+        
+        if(monthsBox.getSelectedIndex() == 0) {
+            monthsBox.setSelectedIndex(monthsBox.getItemCount() - 1);
+            prevYear();
+            return;
+        }
+        
+        monthsBox.setSelectedIndex(monthsBox.getSelectedIndex() - 1);
+        
+        if(yearsRangeType == YearsRangeType.Floating) {
+            buildYearsByShifts(Integer.parseInt(getSelectedYear()), 
+                               negativeYearShift, positiveYearShift);
+            updateYearsBox();
+        }
+        setModelByListBoxes();
+    }
+    
+    
+    private void nextYear() {
+        
+        yearsBox.setSelectedIndex(yearsBox.getSelectedIndex() + 1);
+        
+        if(yearsRangeType == YearsRangeType.Floating) {
+            buildYearsByShifts(Integer.parseInt(getSelectedYear()), 
+                               negativeYearShift, positiveYearShift);
+            updateYearsBox();
+        }
+        setModelByListBoxes();
+        
+    }
+    
+    private void prevYear() {
+        
+        yearsBox.setSelectedIndex(yearsBox.getSelectedIndex() - 1);
+        
+        if(yearsRangeType == YearsRangeType.Floating) {
+            buildYearsByShifts(Integer.parseInt(getSelectedYear()), 
+                               negativeYearShift, positiveYearShift);
+            updateYearsBox();
+        }
+        setModelByListBoxes();
+        
+    }
+    
     /**
      * Returns current selected year in 
      * the {@link #yearsBox} as String
