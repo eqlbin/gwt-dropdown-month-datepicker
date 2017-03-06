@@ -6,6 +6,8 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.datepicker.client.MonthSelector;
 
@@ -114,7 +116,14 @@ public class ListBoxMonthSelector extends MonthSelector {
         grid.setWidget(0, 1, monthsBox);
         grid.setStyleName("ListBoxMonthSelector");
     
-        initWidget(grid);
+        HorizontalPanel panel = new HorizontalPanel();
+        panel.setWidth("100%");
+        panel.setHeight("100%");
+        panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+        
+        panel.add(grid);
+        
+        initWidget(panel);
     }
         
     /**
