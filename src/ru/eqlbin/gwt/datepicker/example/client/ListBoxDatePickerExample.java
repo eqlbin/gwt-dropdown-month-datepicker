@@ -1,4 +1,4 @@
-package ru.eqlbin.gwt.datepicker.client;
+package ru.eqlbin.gwt.datepicker.example.client;
 
 import java.util.Date;
 
@@ -16,6 +16,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+
+import ru.eqlbin.gwt.datepicker.client.ListBoxDatePicker;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
