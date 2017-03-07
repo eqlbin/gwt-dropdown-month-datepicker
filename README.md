@@ -25,7 +25,7 @@ datePicker2.setFloatingYearsRange(-5, 5);
 
 This project was created in times of GWT 2.5.
 
-Similar functionality appeared in GWT since version 2.6:
+Similar functionality appeared in default DatePicker since version 2.6:
 
 ```java
 DatePicker datePicker = new DatePicker();
