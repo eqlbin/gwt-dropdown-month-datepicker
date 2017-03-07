@@ -4,7 +4,7 @@
 /.project
 /target/
 /gwt-unitCache/
-/WebContent/ListBoxDatePickerExample/
-/WebContent/WEB-INF/classes/
-/WebContent/WEB-INF/deploy/
-/WebContent/WEB-INF/lib/
+/example/WebContent/ListBoxDatePickerExample/
+/example/WebContent/WEB-INF/classes/
+/example/WebContent/WEB-INF/deploy/
+/example/WebContent/WEB-INF/lib/
