@@ -20,3 +20,15 @@ datePicker1.setFixedYearsRange(2005, 2015);
 ListBoxDatePicker datePicker2 = new ListBoxDatePicker();
 datePicker2.setFloatingYearsRange(-5, 5);
 ```
+
+# Note
+
+This project was created in times of GWT 2.5.
+
+Similar functionality appeared in GWT since version 2.6:
+
+```java
+DatePicker datePicker = new DatePicker();
+datePicker.setYearAndMonthDropdownVisible(true);
+datePicker.setYearArrowsVisible(true);
+```
