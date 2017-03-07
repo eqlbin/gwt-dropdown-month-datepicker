@@ -3,7 +3,7 @@
 /.classpath
 /.project
 /target/
-/gwt-unitCache/
+/example/gwt-unitCache/
 /example/WebContent/ListBoxDatePickerExample/
 /example/WebContent/WEB-INF/classes/
 /example/WebContent/WEB-INF/deploy/
