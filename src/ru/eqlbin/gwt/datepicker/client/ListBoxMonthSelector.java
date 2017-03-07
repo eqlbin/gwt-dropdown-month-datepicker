@@ -1,5 +1,6 @@
 package ru.eqlbin.gwt.datepicker.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -7,12 +8,13 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.MonthSelector;
+
 
 /**
  * Extends 
@@ -50,26 +52,33 @@ public class ListBoxMonthSelector extends MonthSelector {
     private String[] monthNames; // list of month names
     private String[] years;      // list of years available for selection
 
-    private final ListBox yearsBox = new ListBox(false);
-    private final ListBox monthsBox = new ListBox(false);
-
-    private final Button prevMonthButton = new Button("<");
-    private final Button nextMonthButton = new Button(">");
     
-    private final Button prevYearButton = new Button("<<");
-    private final Button nextYearButton = new Button(">>");
+    @UiField ListBox yearsBox;
+    @UiField ListBox monthsBox;
+
+    @UiField Button prevMonthButton;
+    @UiField Button nextMonthButton;
+    
+    @UiField Button prevYearButton;
+    @UiField Button nextYearButton;
     
     // current shifts for floating range
     private int negativeYearShift = -1, positiveYearShift = -1;
+    
+    private static ListBoxMonthSelectorUiBinder uiBinder = GWT.create(ListBoxMonthSelectorUiBinder.class);
 
-    private Grid grid;       
+    interface ListBoxMonthSelectorUiBinder extends UiBinder<Widget, ListBoxMonthSelector> {
+    }
+
+    public ListBoxMonthSelector() {
+        initWidget(uiBinder.createAndBindUi(this));
+    }
     
     
     @Override
     protected void setup() {
         initYearsBox();
         initMonthsBox();
-        initMonthSelector(); 
         initButtons();        
         setYearsRange(-7, 7, YearsRangeType.Floating);
     }
@@ -149,32 +158,7 @@ public class ListBoxMonthSelector extends MonthSelector {
         });
     }
     
-    
-    /**
-     * Initializes the {@link ListBoxDatePicker}.
-     */
-    private void initMonthSelector(){
-        grid = new Grid(1, 6);
-        
-        grid.setWidget(0, 0, prevYearButton);
-        grid.setWidget(0, 1, prevMonthButton);
-        grid.setWidget(0, 2, yearsBox);
-        grid.setWidget(0, 3, monthsBox);
-        grid.setWidget(0, 4, nextMonthButton);
-        grid.setWidget(0, 5, nextYearButton);
-        
-        grid.setStyleName("ListBoxMonthSelector");
-    
-        HorizontalPanel panel = new HorizontalPanel();
-        panel.setWidth("100%");
-        panel.setHeight("100%");
-        panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-        
-        panel.add(grid);
-        
-        initWidget(panel);
-    }
-        
+            
     /**
      * Sets the range of years available for selection 
      * in the date picker, and its behavior. 

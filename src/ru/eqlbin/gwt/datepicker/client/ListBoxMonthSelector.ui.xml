@@ -1,0 +1,28 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui">
+  <ui:style>
+  .button {
+  	padding: 0px 4px;
+  }
+  
+  .root-panel {
+	  width: 100%;
+	}
+  
+  </ui:style>
+  <g:HorizontalPanel addStyleNames="{style.root-panel}" horizontalAlignment="CENTER">
+
+    <g:Grid >
+      <g:row>
+        <g:customCell><g:Button addStyleNames="{style.button}" ui:field="prevYearButton" >&lt;&lt;</g:Button></g:customCell>
+        <g:customCell><g:Button addStyleNames="{style.button}" ui:field="prevMonthButton" >&lt;</g:Button></g:customCell>
+        <g:customCell><g:ListBox ui:field="yearsBox" /></g:customCell>
+        <g:customCell><g:ListBox ui:field="monthsBox" /></g:customCell>
+        <g:customCell><g:Button addStyleNames="{style.button}" ui:field="nextMonthButton" >&gt;</g:Button></g:customCell>
+        <g:customCell><g:Button addStyleNames="{style.button}" ui:field="nextYearButton" >&gt;&gt;</g:Button></g:customCell>
+      </g:row>    
+    </g:Grid>
+    
+  </g:HorizontalPanel>
+</ui:UiBinder> 
