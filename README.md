@@ -4,8 +4,14 @@ ListBoxDatePicker for GWT
 Date picker component which allows to select the current month 
 of the calendar, using the drop-down list for setting the month and year.
 
-# Using
+# Usage
+
+```xml
+<inherits name='ru.eqlbin.gwt.datepicker.ListBoxDatePicker'/>
 ```
+
+
+```java
 // Fixed range of years
 ListBoxDatePicker datePicker1 = new ListBoxDatePicker();
 datePicker1.setFixedYearsRange(2005, 2015);
