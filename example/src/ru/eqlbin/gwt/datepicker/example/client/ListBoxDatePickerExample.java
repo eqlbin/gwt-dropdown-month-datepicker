@@ -32,8 +32,8 @@ public class ListBoxDatePickerExample implements EntryPoint {
 
         final ListBoxDatePicker datePicker = new ListBoxDatePicker();
 
-        final Label firstYearLabel = new Label("First year or left shift:"); 
-        final Label lastYearLabel = new Label("Last year or right shift:"); 
+        final Label firstYearLabel = new Label("Min year / Current year:"); 
+        final Label lastYearLabel = new Label("Max year / Years count:"); 
         final Label selectedDateLabel = new Label();
         final TextBox firstYearBox = new TextBox();
         final TextBox lastYearBox = new TextBox();
@@ -79,15 +79,15 @@ public class ListBoxDatePickerExample implements EntryPoint {
         fixedRangeButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {               
-                int first = Integer.parseInt(firstYearBox.getValue());
-                int last = Integer.parseInt(lastYearBox.getValue());
+                int minYear = Integer.parseInt(firstYearBox.getValue());
+                int maxYear = Integer.parseInt(lastYearBox.getValue());
                 
-                if(first <= 0 || last <= 0 || first > last ) {
+                if(minYear <= 0 || maxYear <= 0 || minYear > maxYear ) {
                     Window.alert("Wrong fixed range of years!" );
                     return;
                 }
                 
-                datePicker.setFixedYearsRange(first, last);
+                datePicker.setFixedYearsRange(minYear, maxYear);
             }
         });
         
@@ -95,20 +95,20 @@ public class ListBoxDatePickerExample implements EntryPoint {
             @Override
             public void onClick(ClickEvent event) {
                 
-                int leftShift = Integer.parseInt(firstYearBox.getValue());
-                int rightShift = Integer.parseInt(lastYearBox.getValue());
+                int currentYear = Integer.parseInt(firstYearBox.getValue());
+                int yearsCount = Integer.parseInt(lastYearBox.getValue());
 
-                if(leftShift >= 0) {
-                    Window.alert("Wrong left shift value! It must be < 0.");
+                if(currentYear < 0) {
+                    Window.alert("Current year must be > -1!");
                     return;
                 }
                 
-                if(rightShift <= 0) {
-                    Window.alert("Wrong right shift value! It must be > 0.");
+                if(yearsCount <= 0) {
+                    Window.alert("Years count must be > 0");
                     return;
                 }
                 
-                datePicker.setFloatingYearsRange(leftShift, rightShift);
+                datePicker.setFloatingYearsRange(currentYear, yearsCount);
             }
         });
 

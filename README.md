@@ -13,12 +13,16 @@ of the calendar, using the drop-down list for setting the month and year.
 
 ```java
 // Fixed range of years
-ListBoxDatePicker datePicker1 = new ListBoxDatePicker();
-datePicker1.setFixedYearsRange(2005, 2015);
+ListBoxDatePicker datePickerFixed = new ListBoxDatePicker();
+int minYear = 2010;
+int maxYear = 2020;
+datePickerFixed.setFixedYearsRange(minYear, maxYear);
 
 // Floating range of years
-ListBoxDatePicker datePicker2 = new ListBoxDatePicker();
-datePicker2.setFloatingYearsRange(-5, 5);
+ListBoxDatePicker datePickerFloating = new ListBoxDatePicker();
+int currentYear = 2017;
+int yearsCount = 10;
+datePickerFloating.setFloatingYearsRange(currentYear, yearsCount);
 ```
 
 # Note

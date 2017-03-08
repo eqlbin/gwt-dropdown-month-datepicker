@@ -21,30 +21,23 @@ public class ListBoxDatePicker extends DatePicker {
     /**
      * Sets the floating range of years
      * 
-     * @param negativeShift - shift to the left relative to 
-     *                        the selected year; must be < 0.
-     * @param positiveShift - shift to the right relative to 
-     *                        the selected year; must be > 0.
+     * @param minYear - first year of the range
+     * @param maxYear - last year of the range 
      */
-    public void setFloatingYearsRange(int negativeShift, int positiveShift) {
-        ((ListBoxMonthSelector)getMonthSelector())
-                    .setYearsRange(negativeShift, positiveShift, 
-                         ListBoxMonthSelector.YearsRangeType.Floating);
-        ((DefaultCalendarView)getView()).refresh();
+    public void setFixedYearsRange(int minYear, int maxYear) {
+        ((ListBoxMonthSelector)getMonthSelector()).setFixedYearsRange(minYear, maxYear);
+        ((DefaultCalendarView) getView()).refresh();
+    }
+
+    /**
+     * Sets the floating range of years
+     * 
+     * @param currentYear - current selected year
+     * @param yearsCount - size of the years select menu
+     */
+    public void setFloatingYearsRange(int currentYear, int yearsCount) {
+        ((ListBoxMonthSelector) getMonthSelector()).setFloatingYearsRange(currentYear, yearsCount);
+        ((DefaultCalendarView) getView()).refresh();
     }
     
-    /**
-     * Sets the fixed range of years
-     * 
-     * @param first - value of the first year in the list; 
-     *                must be > 0 and <= last.
-     * @param last  - value of the last year in the list; 
-     *                must be > 0 and >= first.
-     */
-    public void setFixedYearsRange(int first, int last) {
-        ((ListBoxMonthSelector)getMonthSelector())
-                    .setYearsRange(first, last, 
-                          ListBoxMonthSelector.YearsRangeType.Fixed);
-        ((DefaultCalendarView)getView()).refresh();
-    }
 }

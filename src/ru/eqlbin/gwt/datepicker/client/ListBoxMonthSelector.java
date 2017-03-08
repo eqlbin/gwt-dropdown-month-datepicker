@@ -34,39 +34,31 @@ import com.google.gwt.user.datepicker.client.MonthSelector;
  * @author eqlbin
  *
  */
+@SuppressWarnings("deprecation")
 public class ListBoxMonthSelector extends MonthSelector {
-
-    /**
-     * Type of the year range for for {@link ListBoxMonthSelector}.<br><br>
-     * 
-     * <b>Fixed</b>    - fixed range<br>
-     * <b>Floating</b> - floating range, which may vary 
-     *                   according to the selected year
-     */
-    public static enum YearsRangeType {Fixed, Floating};
-    // current type of the years range
-    private YearsRangeType yearsRangeType;
 
     private static final DateTimeFormat MONTH_FORMAT = 
                              DateTimeFormat.getFormat("yyyy-MMM");
     private static final DateTimeFormat YEAR_FORMAT = 
                              DateTimeFormat.getFormat("yyyy");
 
-    private String[] monthNames; // list of month names
     private String[] years;      // list of years available for selection
 
+    private int minYear;
+    private int maxYear;
     
-    @UiField ListBox yearsBox;
-    @UiField ListBox monthsBox;
+    private int yearsCount = 20;
+    
+    private boolean fixedRange = false;
+    
+    @UiField ListBox yearsSelect;
+    @UiField ListBox monthsSelect;
 
     @UiField Button prevMonthButton;
     @UiField Button nextMonthButton;
     
     @UiField Button prevYearButton;
     @UiField Button nextYearButton;
-    
-    // current shifts for floating range
-    private int negativeYearShift = -1, positiveYearShift = -1;
     
     private static ListBoxMonthSelectorUiBinder uiBinder = GWT.create(ListBoxMonthSelectorUiBinder.class);
 
@@ -75,15 +67,14 @@ public class ListBoxMonthSelector extends MonthSelector {
 
     public ListBoxMonthSelector() {
         initWidget(uiBinder.createAndBindUi(this));
-        initYearsBox();
-        initMonthsBox();
-        initButtons(); 
+
     }
-    
     
     @Override
     protected void setup() {
-        setYearsRange(-7, 7, YearsRangeType.Floating);
+        initYearsSelect();
+        initMonthsSelect();
+        initButtons(); 
     }
 
     @Override
@@ -92,36 +83,39 @@ public class ListBoxMonthSelector extends MonthSelector {
     }
 
     /**
-     * Initializes the {@link #yearsBox}
+     * Initializes the {@link #yearsSelect}
      */
-    private void initYearsBox() {
-        yearsBox.setVisibleItemCount(1);
-        yearsBox.addChangeHandler(new ChangeHandler() {
+    private void initYearsSelect() {
+        yearsSelect.setVisibleItemCount(1);
+        yearsSelect.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
-                if(yearsRangeType == YearsRangeType.Floating) {
-                    buildYearsByShifts(Integer.parseInt(getSelectedYear()), 
-                                       negativeYearShift, positiveYearShift);
+                if(!fixedRange) {
+                    buildYearsByCount(Integer.parseInt(getSelectedYear()));
                     updateYearsBox();
                 }
                 setModelByListBoxes();
             }
         });
+        
+        buildYearsByCount(getModel().getCurrentMonth().getYear() + 1900);
+        updateYearsBox();
     }
 
     /**
-     * Initializes the {@link #monthsBox}
+     * Initializes the {@link #monthsSelect}
      */
-    private void initMonthsBox() {
+    private void initMonthsSelect() {
+        
         // localized short month names
-        monthNames = LocaleInfo.getCurrentLocale().
-                        getDateTimeFormatInfo().monthsShortStandalone();
-        for (String month : monthNames) {
-            monthsBox.addItem(month);
+        String[] monthNames = LocaleInfo.getCurrentLocale()
+                                .getDateTimeFormatInfo().monthsShortStandalone();
+        for (String monthName : monthNames) {
+            monthsSelect.addItem(monthName);
         }
         
-        monthsBox.setVisibleItemCount(1);
-        monthsBox.addChangeHandler(new ChangeHandler() {
+        monthsSelect.setVisibleItemCount(1);
+        monthsSelect.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
                 setModelByListBoxes();
@@ -161,66 +155,25 @@ public class ListBoxMonthSelector extends MonthSelector {
         });
     }
     
-            
-    /**
-     * Sets the range of years available for selection 
-     * in the date picker, and its behavior. 
-     * 
-     * @param first - the value of the first year on the list, 
-     *                if the type of the range is fixed, 
-     *                or shift to the left of the currently 
-     *                selected year if the range is floating;
-     *                for a fixed range value must be > 0 and 
-     *                <= last, but < 0 if range is floating
-     *                
-     * @param last -  the value of the last year on the list, 
-     *                if the type of the range is fixed,  
-     *                or shift to the right of the currently 
-     *                selected year if the range is floating;
-     *                for a fixed range value must be > 0 and 
-     *                >= first, but > 0 if range is floating
-     *                 
-     * @param type -  range type that defines its behavior
-     * 
-     * @see YearsRangeType
-     */
-    protected void setYearsRange(int first, int last, YearsRangeType type){
-        yearsRangeType = type;
-        
-        switch (type) {
-        
-        case Fixed:
-            
-            this.negativeYearShift = -1;
-            this.positiveYearShift = -1;
-            
-            buildYears(first, last);
+    public void setFixedYearsRange(int minYear, int maxYear) {
+        this.minYear = minYear;
+        this.maxYear = maxYear;
+        buildYearsByRange();
+        fixedRange = true;
+        updateYearsBox();
+        setModelByListBoxes();
+    }
     
-            break;
-            
-        case Floating:
-            // various signs for left and right shifts 
-            // are needed for additional verification
-            if (first >= 0) throw 
-                new IllegalArgumentException("First year shift value must be < 0");
-            if (last <= 0) throw 
-                new IllegalArgumentException("Last year shift value must be > 0");
-            
-            this.negativeYearShift = Math.abs(first);
-            this.positiveYearShift = last;
-    
-            int currentYear = Integer.parseInt(getCurrentModelYear());
-            buildYearsByShifts(currentYear, negativeYearShift, positiveYearShift);
-    
-            break;
-        }
-    
+    public void setFloatingYearsRange(int currentYear, int yearsCount) {
+        this.yearsCount = yearsCount;
+        buildYearsByCount(currentYear);
+        fixedRange = false;
         updateYearsBox();
         setModelByListBoxes();
     }
 
     /**
-     * Rebuilds the component {@link #yearsBox}
+     * Rebuilds the component {@link #yearsSelect}
      * according with the current value of the 
      * field {@link #years}
      */
@@ -230,13 +183,13 @@ public class ListBoxMonthSelector extends MonthSelector {
         String selectedYear = getSelectedYear();
         boolean selectedFound = false;
 
-        this.yearsBox.clear();
+        this.yearsSelect.clear();
         for (int i=0; i<this.years.length; i++) {
             String year = this.years[i];
-            this.yearsBox.addItem(year);
+            this.yearsSelect.addItem(year);
             
             if(year.equals(selectedYear)) {
-                this.yearsBox.setSelectedIndex(i);
+                this.yearsSelect.setSelectedIndex(i);
                 selectedFound = true;
             }
         }
@@ -244,69 +197,54 @@ public class ListBoxMonthSelector extends MonthSelector {
         if(selectedFound) return;
         
         // select the middle item if the previous selected year is not found in yearsBox
-        this.yearsBox.setSelectedIndex(this.yearsBox.getItemCount()/2);
+        this.yearsSelect.setSelectedIndex(this.yearsSelect.getItemCount()/2);
     }
             
+
     /**         
      * Generates and stores in a field {@link #years}
-     * the list of years. Based on shifts relative to the base year.
+     * the list of years with the size of {@link #yearsCount}.
      * <br><br>
-     * For example, to create a list of years from 1990 to 2005, inclusive:
-     * <br><br>
-     * {@code buildYearsByShifts(2000, 10, 5);}
-     * 
      * @param baseYear - base year; must be > 0.
-     * 
-     * @param negativeShiftYear - shift to the left relative to the base year;
-     *                            must be > 0.
-     * @param positiveShiftYear - shift to the right relative to the base year; 
-     *                            must be > 0.
      */
-    private void buildYearsByShifts(int baseYear, 
-            int negativeShiftYear, int positiveShiftYear){
+    private void buildYearsByCount(int baseYear){
         
-        if (baseYear < 0 || negativeShiftYear < 0 || positiveShiftYear < 0)
-            throw new IllegalArgumentException("All arguments must be positive values");
+        if (baseYear < 0)
+            throw new IllegalArgumentException("Base year must be > 0!");
         
-        // cut off the possible negative years, 
-        // recalculating the negativeShiftYear
-        if(baseYear <= negativeShiftYear)
-            negativeShiftYear = negativeShiftYear - (negativeShiftYear - baseYear) - 1;
-
-        int yearsCount = positiveShiftYear + negativeShiftYear + 1;
-        int firstYear = baseYear - negativeShiftYear;
-    
+        int shift = yearsCount/2;
+        int firstYear = baseYear - shift;
         this.years = new String[yearsCount];
 
         for (int i = firstYear; i < firstYear + yearsCount; i++) {
                 this.years[i - firstYear] = yearToString(i);
         } 
     }
-
+    
     /**
      * Generates and stores in a field {@link #years}
      * a list of years from first to last, inclusive
      * 
-     * @param first - first year in the list
-     * @param last  - last year in the list
+     * @param minYear - first year in the list
+     * @param maxYear - last year in the list
      */
-    private void buildYears(int first, int last){
+    private void buildYearsByRange(){
         
-        if (last < first) throw 
-            new IllegalArgumentException("Last year must be >= first year");
-        if (first < 1 || last < 1) throw 
+        if (maxYear < minYear) throw 
+            new IllegalArgumentException("Max year must be >= min year");
+        if (minYear < 1 || maxYear < 1) throw 
             new IllegalArgumentException("Years must be > 0");
 
-        this.years = new String[last - first + 1];
-
-        for (int i = first; i <= last; i++) {
-                this.years[i - first] = yearToString(i);
+        
+        this.years = new String[maxYear - minYear + 1];
+        for (int year = minYear; year <= maxYear; year++) {
+                this.years[year - minYear] = yearToString(year);
         }
     }
 
     /**
-     * Sets the values ​​in the components {@link #yearsBox}
-     * and {@link #monthsBox}, which correspond to the current month of the 
+     * Sets the values ​​in the components {@link #yearsSelect}
+     * and {@link #monthsSelect}, which correspond to the current month of the 
      * {@link com.google.gwt.user.datepicker.client.CalendarModel CalendarModel}
      */
     private void setListBoxesByModel() { 
@@ -319,15 +257,15 @@ public class ListBoxMonthSelector extends MonthSelector {
         boolean yearSetted = false;
         boolean monthSetted = false;
         
-        for (int i = 0; i < yearsBox.getItemCount(); i++) {
-            if (yearsBox.getItemText(i).equals(String.valueOf(year))) {
-                yearsBox.setSelectedIndex(i);
+        for (int i = 0; i < yearsSelect.getItemCount(); i++) {
+            if (yearsSelect.getItemText(i).equals(String.valueOf(year))) {
+                yearsSelect.setSelectedIndex(i);
                 yearSetted = true;
                 break;
             }
         }
     
-        monthsBox.setSelectedIndex(month);
+        monthsSelect.setSelectedIndex(month);
         monthSetted = true;
     
         if(!yearSetted || !monthSetted)
@@ -337,12 +275,12 @@ public class ListBoxMonthSelector extends MonthSelector {
     
     /**
      * Sets the current calendar month, based on the values 
-     * ​​that are specified in the components {@link #yearsBox}
-     * и {@link #monthsBox}
+     * ​​that are specified in the components {@link #yearsSelect}
+     * и {@link #monthsSelect}
      */
     private void setModelByListBoxes() {
-        String year = yearsBox.getItemText(yearsBox.getSelectedIndex());
-        String month = monthsBox.getItemText(monthsBox.getSelectedIndex());
+        String year = yearsSelect.getItemText(yearsSelect.getSelectedIndex());
+        String month = monthsSelect.getItemText(monthsSelect.getSelectedIndex());
     
         getModel().setCurrentMonth(
                 MONTH_FORMAT.parse(year + "-" + month));
@@ -352,17 +290,20 @@ public class ListBoxMonthSelector extends MonthSelector {
     
     private void nextMonth() {
         
-        if(monthsBox.getSelectedIndex() == monthsBox.getItemCount() - 1) {
-            monthsBox.setSelectedIndex(0);
-            nextYear();
+        if(monthsSelect.getSelectedIndex() == monthsSelect.getItemCount() - 1) {
+            
+            if(hasNextMonth()) {
+                nextYear();
+                monthsSelect.setSelectedIndex(0);
+            }
+            
             return;
         }
         
-        monthsBox.setSelectedIndex(monthsBox.getSelectedIndex() + 1);
+        monthsSelect.setSelectedIndex(monthsSelect.getSelectedIndex() + 1);
         
-        if(yearsRangeType == YearsRangeType.Floating) {
-            buildYearsByShifts(Integer.parseInt(getSelectedYear()), 
-                               negativeYearShift, positiveYearShift);
+        if(!fixedRange) {
+            buildYearsByCount(Integer.parseInt(getSelectedYear())); 
             updateYearsBox();
         }
         setModelByListBoxes();
@@ -371,17 +312,20 @@ public class ListBoxMonthSelector extends MonthSelector {
     
     private void prevMonth() {
         
-        if(monthsBox.getSelectedIndex() == 0) {
-            monthsBox.setSelectedIndex(monthsBox.getItemCount() - 1);
-            prevYear();
+        if(monthsSelect.getSelectedIndex() == 0) {
+            
+            if(hasPrevMonth()) {
+                prevYear();
+                monthsSelect.setSelectedIndex(monthsSelect.getItemCount() - 1);
+            }
+            
             return;
         }
         
-        monthsBox.setSelectedIndex(monthsBox.getSelectedIndex() - 1);
+        monthsSelect.setSelectedIndex(monthsSelect.getSelectedIndex() - 1);
         
-        if(yearsRangeType == YearsRangeType.Floating) {
-            buildYearsByShifts(Integer.parseInt(getSelectedYear()), 
-                               negativeYearShift, positiveYearShift);
+        if(!fixedRange) {
+            buildYearsByCount(Integer.parseInt(getSelectedYear())); 
             updateYearsBox();
         }
         setModelByListBoxes();
@@ -390,42 +334,74 @@ public class ListBoxMonthSelector extends MonthSelector {
     
     private void nextYear() {
         
-        yearsBox.setSelectedIndex(yearsBox.getSelectedIndex() + 1);
+        if(fixedRange && !hasNextYear()) return;
         
-        if(yearsRangeType == YearsRangeType.Floating) {
-            buildYearsByShifts(Integer.parseInt(getSelectedYear()), 
-                               negativeYearShift, positiveYearShift);
+        yearsSelect.setSelectedIndex(yearsSelect.getSelectedIndex() + 1);
+        
+        if(!fixedRange) {
+            buildYearsByCount(Integer.parseInt(getSelectedYear())); 
             updateYearsBox();
         }
         setModelByListBoxes();
-        
     }
     
     private void prevYear() {
         
-        yearsBox.setSelectedIndex(yearsBox.getSelectedIndex() - 1);
+        if(fixedRange && !hasPrevYear()) return;
         
-        if(yearsRangeType == YearsRangeType.Floating) {
-            buildYearsByShifts(Integer.parseInt(getSelectedYear()), 
-                               negativeYearShift, positiveYearShift);
+        yearsSelect.setSelectedIndex(yearsSelect.getSelectedIndex() - 1);
+        
+        if(!fixedRange) {
+            buildYearsByCount(Integer.parseInt(getSelectedYear())); 
             updateYearsBox();
         }
         setModelByListBoxes();
-        
     }
+    
+    private boolean hasPrevMonth(){
+        return hasPrevYear() && (!fixedRange || monthsSelect.getSelectedIndex() > 0);
+    }
+    
+    private boolean hasNextMonth(){
+        return hasNextYear() && (!fixedRange || monthsSelect.getSelectedIndex() <  monthsSelect.getItemCount() - 1);
+    }
+    
+    private boolean hasPrevYear(){
+        return yearsSelect.getSelectedIndex() > 0;
+    }
+    
+    private boolean hasNextYear(){
+        return yearsSelect.getSelectedIndex() < yearsSelect.getItemCount() - 1;
+    }
+    
+    private void updateNextButtonsState(){
+
+        if(!hasNextMonth()) {
+            nextMonthButton.setEnabled(false);
+        } else {
+            nextMonthButton.setEnabled(true);
+        }
+        
+        if(!hasNextYear()) {
+            nextYearButton.setEnabled(false);
+        } else {
+            nextYearButton.setEnabled(true);
+        }
+    }
+    
     
     /**
      * Returns current selected year in 
-     * the {@link #yearsBox} as String
+     * the {@link #yearsSelect} as String
      * 
      * @return current selected year
      */
     private String getSelectedYear(){
         String selectedYear = null;
-        int selectedIndex = yearsBox.getSelectedIndex();
+        int selectedIndex = yearsSelect.getSelectedIndex();
         
         if(selectedIndex >= 0)
-            selectedYear = yearsBox.getItemText(selectedIndex);
+            selectedYear = yearsSelect.getItemText(selectedIndex);
         
         return selectedYear;
     }

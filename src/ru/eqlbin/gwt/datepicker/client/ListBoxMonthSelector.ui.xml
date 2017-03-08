@@ -17,8 +17,8 @@
       <g:row>
         <g:customCell><g:Button addStyleNames="{style.button}" ui:field="prevYearButton" >&lt;&lt;</g:Button></g:customCell>
         <g:customCell><g:Button addStyleNames="{style.button}" ui:field="prevMonthButton" >&lt;</g:Button></g:customCell>
-        <g:customCell><g:ListBox ui:field="yearsBox" /></g:customCell>
-        <g:customCell><g:ListBox ui:field="monthsBox" /></g:customCell>
+        <g:customCell><g:ListBox ui:field="yearsSelect" /></g:customCell>
+        <g:customCell><g:ListBox ui:field="monthsSelect" /></g:customCell>
         <g:customCell><g:Button addStyleNames="{style.button}" ui:field="nextMonthButton" >&gt;</g:Button></g:customCell>
         <g:customCell><g:Button addStyleNames="{style.button}" ui:field="nextYearButton" >&gt;&gt;</g:Button></g:customCell>
       </g:row>    
