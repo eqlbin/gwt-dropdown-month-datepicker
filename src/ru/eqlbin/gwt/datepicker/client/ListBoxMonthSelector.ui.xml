@@ -7,22 +7,41 @@
   }
   
   .root-panel {
-	  width: 100%;
-	}
-  
+  	width: 100%;
+  }
   </ui:style>
-  <g:HorizontalPanel addStyleNames="{style.root-panel}" horizontalAlignment="CENTER">
+  <g:HorizontalPanel addStyleNames="{style.root-panel}"
+    horizontalAlignment="CENTER">
 
-    <g:Grid >
+    <g:Grid>
       <g:row>
-        <g:customCell><g:Button addStyleNames="{style.button}" ui:field="prevYearButton" >&lt;&lt;</g:Button></g:customCell>
-        <g:customCell><g:Button addStyleNames="{style.button}" ui:field="prevMonthButton" >&lt;</g:Button></g:customCell>
-        <g:customCell><g:ListBox ui:field="yearsSelect" /></g:customCell>
-        <g:customCell><g:ListBox ui:field="monthsSelect" /></g:customCell>
-        <g:customCell><g:Button addStyleNames="{style.button}" ui:field="nextMonthButton" >&gt;</g:Button></g:customCell>
-        <g:customCell><g:Button addStyleNames="{style.button}" ui:field="nextYearButton" >&gt;&gt;</g:Button></g:customCell>
-      </g:row>    
+        <g:customCell>
+          <g:Button addStyleNames="{style.button}" ui:field="prevYearButton">&lt;&lt;</g:Button>
+        </g:customCell>
+        <g:customCell>
+          <g:Button addStyleNames="{style.button}" ui:field="prevMonthButton">&lt;</g:Button>
+        </g:customCell>
+
+        <g:customCell>
+          <g:HorizontalPanel ui:field="yearMonthSelectPanel"  horizontalAlignment="CENTER" spacing="4">
+            <g:ListBox ui:field="yearsDropdown" />
+            <g:ListBox ui:field="monthsDropdown" />
+            <!-- <g:Label ui:field="currentMonthLabel" visible="false"/> -->
+          </g:HorizontalPanel>
+        </g:customCell>
+
+
+        <!-- <g:customCell><g:ListBox ui:field="yearsSelect" /></g:customCell> 
+          <g:customCell><g:ListBox ui:field="monthsSelect" /></g:customCell> -->
+
+        <g:customCell>
+          <g:Button addStyleNames="{style.button}" ui:field="nextMonthButton">&gt;</g:Button>
+        </g:customCell>
+        <g:customCell>
+          <g:Button addStyleNames="{style.button}" ui:field="nextYearButton">&gt;&gt;</g:Button>
+        </g:customCell>
+      </g:row>
     </g:Grid>
-    
+
   </g:HorizontalPanel>
 </ui:UiBinder> 
