@@ -5,8 +5,16 @@
 h1 {
   font-size: 2em;
   font-weight: bold;
-  color: #777777;
-  margin: 40px 0px 70px;
+  color: #555;
+  margin: 20px 0px;
+  text-align: center;
+}
+
+h2 {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #555;
+  margin: 10px 0px;
   text-align: center;
 }
 
