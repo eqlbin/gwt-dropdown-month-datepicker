@@ -25,6 +25,10 @@ int yearsCount = 10;
 datePickerFloating.setFloatingYearsRange(currentYear, yearsCount);
 ```
 
+# Screenshot
+
+![alt tag](https://github.com/eqlbin/gwt-listbox-datepicker/raw/master/screenshots/screenshot.png)
+
 # Note
 
 This project was created in times of GWT 2.5.
