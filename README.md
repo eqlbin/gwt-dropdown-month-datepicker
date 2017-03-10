@@ -10,7 +10,6 @@ of the calendar, using the drop-down list for setting the month and year.
 <inherits name='ru.eqlbin.gwt.datepicker.ListBoxDatePicker'/>
 ```
 
-
 ```java
 // Fixed range of years
 ListBoxDatePicker datePickerFixed = new ListBoxDatePicker();
@@ -40,3 +39,5 @@ DatePicker datePicker = new DatePicker();
 datePicker.setYearAndMonthDropdownVisible(true);
 datePicker.setYearArrowsVisible(true);
 ```
+
+So, now this project is just an example of how to create your own MonthSelector.
