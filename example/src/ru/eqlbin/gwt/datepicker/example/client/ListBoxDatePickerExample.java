@@ -10,7 +10,8 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -28,21 +29,27 @@ public class ListBoxDatePickerExample implements EntryPoint {
     
     private static final DateTimeFormat DATE_FORMAT = DateTimeFormat.getFormat("yyyy-MM-dd");
 
+    
+    private ListBoxDatePicker datePickerFloating;
+    private ListBoxDatePicker datePickerFixed;
+    
     /**
      * This is the entry point method.
      */
     public void onModuleLoad() {
-        RootPanel.get("datePickerFloating").add(createFloatingDatePickerExample());
-        RootPanel.get("datePickerFixed").add(createFixedDatePickerExample());
+  
+        RootPanel.get("datePickerFloatingExample").add(createFloatingDatePickerExample());
+        RootPanel.get("datePickerFixedExample").add(createFixedDatePickerExample());
+        RootPanel.get("defaultMethodsExample").add(createDefaultMethodsExample());
     }
-    
-    @SuppressWarnings("deprecation")
+
+
     public Widget createFloatingDatePickerExample() {
         
-        int currentYear = new Date().getYear() + 1900;
+        int currentYear = 2015;
         int yearsCount = 10;
         
-        final ListBoxDatePicker datePickerFloating = new ListBoxDatePicker();
+        datePickerFloating = new ListBoxDatePicker();
         datePickerFloating.setFloatingYearsRange(currentYear, yearsCount);
         
         final Label currentYearLabel = new Label("Current year:"); 
@@ -57,16 +64,11 @@ public class ListBoxDatePickerExample implements EntryPoint {
         final Button setRangeButton = new Button("Set range");
         
         VerticalPanel datePickerPanel = new VerticalPanel();
-        datePickerPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-        datePickerPanel.setWidth("300px");
         datePickerPanel.setSpacing(5);
         datePickerPanel.add(datePickerFloating);
         datePickerPanel.add(selectedDateLabel);
-        datePickerPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         
         VerticalPanel yearsRangePanel = new VerticalPanel();
-        yearsRangePanel.setWidth("300px");
-        yearsRangePanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
         yearsRangePanel.setSpacing(5);
         yearsRangePanel.add(currentYearLabel);
         yearsRangePanel.add(currentYearInputBox);
@@ -75,13 +77,11 @@ public class ListBoxDatePickerExample implements EntryPoint {
         yearsRangePanel.add(setRangeButton);
         
         HorizontalPanel mainPanel = new HorizontalPanel();
-        mainPanel.setWidth("100%");
+        mainPanel.setWidth("500px");
         mainPanel.setSpacing(10);
         mainPanel.add(datePickerPanel);
         mainPanel.add(yearsRangePanel);
-        mainPanel.setCellHorizontalAlignment(datePickerPanel, HasHorizontalAlignment.ALIGN_RIGHT);
-        mainPanel.setCellHorizontalAlignment(yearsRangePanel, HasHorizontalAlignment.ALIGN_LEFT);
-                
+        
         setRangeButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -121,7 +121,7 @@ public class ListBoxDatePickerExample implements EntryPoint {
         int minYear = currentYear - 5;
         int maxYear = currentYear + 5;
         
-        final ListBoxDatePicker datePickerFixed = new ListBoxDatePicker();
+        datePickerFixed = new ListBoxDatePicker();
         datePickerFixed.setFixedYearsRange(minYear, maxYear);
         
         final Label minYearLabel = new Label("Min year:"); 
@@ -136,16 +136,11 @@ public class ListBoxDatePickerExample implements EntryPoint {
         final Button setRangeButton = new Button("Set range");
 
         VerticalPanel datePickerPanel = new VerticalPanel();
-        datePickerPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-        datePickerPanel.setWidth("300px");
         datePickerPanel.setSpacing(5);
         datePickerPanel.add(datePickerFixed);
         datePickerPanel.add(selectedDateLabel);
-        datePickerPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 
         VerticalPanel yearsRangePanel = new VerticalPanel();
-        yearsRangePanel.setWidth("300px");
-        yearsRangePanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
         yearsRangePanel.setSpacing(5);
         yearsRangePanel.add(minYearLabel);
         yearsRangePanel.add(minYearInput);
@@ -154,12 +149,11 @@ public class ListBoxDatePickerExample implements EntryPoint {
         yearsRangePanel.add(setRangeButton);
         
         HorizontalPanel mainPanel = new HorizontalPanel();
-        mainPanel.setWidth("100%");
+        mainPanel.setWidth("500px");
         mainPanel.setSpacing(10);
         mainPanel.add(datePickerPanel);
         mainPanel.add(yearsRangePanel);
-        mainPanel.setCellHorizontalAlignment(datePickerPanel, HasHorizontalAlignment.ALIGN_RIGHT);
-        mainPanel.setCellHorizontalAlignment(yearsRangePanel, HasHorizontalAlignment.ALIGN_LEFT);
+
         
         setRangeButton.addClickHandler(new ClickHandler() {
             @Override
@@ -186,5 +180,63 @@ public class ListBoxDatePickerExample implements EntryPoint {
         
         return mainPanel;
     }
+    
+    
+    private Widget createDefaultMethodsExample(){
+        
+        final CheckBox setYearAndMonthDropdownVisibleCheck = new CheckBox("setYearAndMonthDropdownVisible");
+        setYearAndMonthDropdownVisibleCheck.setValue(true);
+        
+        final CheckBox setYearArrowsVisibleCheck = new CheckBox("setYearArrowsVisible");
+        setYearArrowsVisibleCheck.setValue(true);
+        
+        final Button setVisibleYearCountButton = new Button("setVisibleYearCount");
+        
+        final TextBox yearCountInput = new TextBox();
+        
+        Grid grid = new Grid(2, 2);
+        grid.setCellSpacing(10);
+        grid.setWidget(0, 0, setYearArrowsVisibleCheck);
+        grid.setWidget(0, 1, setYearAndMonthDropdownVisibleCheck);
+        grid.setWidget(1, 0, yearCountInput);
+        grid.setWidget(1, 1, setVisibleYearCountButton);
+        
+        
+        setYearAndMonthDropdownVisibleCheck.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
+                datePickerFixed.setYearAndMonthDropdownVisible(event.getValue());                
+                datePickerFloating.setYearAndMonthDropdownVisible(event.getValue());                
+            }
+        });
+        
+        setYearArrowsVisibleCheck.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
+                datePickerFixed.setYearArrowsVisible(event.getValue());                
+                datePickerFloating.setYearArrowsVisible(event.getValue());                
+            }
+        });
+        
+        setVisibleYearCountButton.addClickHandler(new ClickHandler() {
+            
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onClick(ClickEvent event) {
+                datePickerFixed.setFloatingYearsRange(
+                        datePickerFixed.getCurrentMonth().getYear() + 1900, 
+                        Integer.parseInt(yearCountInput.getValue()));
+                datePickerFloating.setFloatingYearsRange(
+                        datePickerFixed.getCurrentMonth().getYear() + 1900, 
+                        Integer.parseInt(yearCountInput.getValue()));
+            }
+        });
+        
+        
+        return grid;
+    }
+    
     
 }

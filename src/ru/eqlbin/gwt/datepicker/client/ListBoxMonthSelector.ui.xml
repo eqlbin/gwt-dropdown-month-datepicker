@@ -23,10 +23,10 @@
         </g:customCell>
 
         <g:customCell>
-          <g:HorizontalPanel ui:field="yearMonthSelectPanel"  horizontalAlignment="CENTER" spacing="4">
-            <g:ListBox ui:field="yearsDropdown" />
+          <g:HorizontalPanel ui:field="currentMonthPanel"  horizontalAlignment="CENTER" spacing="4">
+<!--             <g:ListBox ui:field="yearsDropdown" />
             <g:ListBox ui:field="monthsDropdown" />
-            <!-- <g:Label ui:field="currentMonthLabel" visible="false"/> -->
+            <g:Label ui:field="currentMonthLabel" visible="false"/> -->
           </g:HorizontalPanel>
         </g:customCell>
 

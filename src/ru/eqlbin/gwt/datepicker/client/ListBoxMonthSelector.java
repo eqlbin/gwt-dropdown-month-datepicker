@@ -49,26 +49,23 @@ public class ListBoxMonthSelector extends MonthSelector {
     private int minYear;
     private int maxYear;
     
-    private int yearsCount = 20;
+    private int dropdownYearsCount = 21;
     
     private boolean fixedRange = false;
+    private boolean dropdownVisible = true;
+    private boolean yearsButtonsVisible = true;
     
-//    private boolean dropdownVisible = true;
-//    private boolean yearsButtonsVisible = true;
-    
-    
-    @UiField HorizontalPanel yearMonthSelectPanel;
-    @UiField ListBox yearsDropdown;
-    @UiField ListBox monthsDropdown;
+    @UiField HorizontalPanel currentMonthPanel;
+
+    private final ListBox yearsDropdown = new ListBox();
+    private final ListBox monthsDropdown = new ListBox();
+    private final Label currentMonthLabel = new Label();
 
     @UiField Button prevMonthButton;
     @UiField Button nextMonthButton;
     
     @UiField Button prevYearButton;
     @UiField Button nextYearButton;
-    
-//    @UiField Label currentMonthLabel;
-    
     
     private static ListBoxMonthSelectorUiBinder uiBinder = GWT.create(ListBoxMonthSelectorUiBinder.class);
 
@@ -77,7 +74,6 @@ public class ListBoxMonthSelector extends MonthSelector {
 
     public ListBoxMonthSelector() {
         initWidget(uiBinder.createAndBindUi(this));
-
     }
     
     @Override
@@ -96,6 +92,7 @@ public class ListBoxMonthSelector extends MonthSelector {
      * Initializes the {@link #yearsDropdown}
      */
     private void initYearsDropdown() {
+        yearsDropdown.setMultipleSelect(false);
         yearsDropdown.setVisibleItemCount(1);
         yearsDropdown.addChangeHandler(new ChangeHandler() {
             @Override
@@ -103,15 +100,15 @@ public class ListBoxMonthSelector extends MonthSelector {
                 updateModel();
             }
         });
-        
-        buildYearsByCount(getCurrentYear());
-        rebuildYearsDropdown();
     }
 
     /**
      * Initializes the {@link #monthsDropdown}
      */
     private void initMonthsDropdown() {
+        
+        monthsDropdown.setMultipleSelect(false);
+        monthsDropdown.setVisibleItemCount(1);
         
         // localized short month names
         String[] monthNames = LocaleInfo.getCurrentLocale()
@@ -120,7 +117,6 @@ public class ListBoxMonthSelector extends MonthSelector {
             monthsDropdown.addItem(monthName);
         }
         
-        monthsDropdown.setVisibleItemCount(1);
         monthsDropdown.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
@@ -178,11 +174,11 @@ public class ListBoxMonthSelector extends MonthSelector {
         updateUI();
     }
     
-    public void setFloatingYearsRange(int currentYear, int yearsCount) {
+    public void setFloatingYearsRange(int currentYear, int dropdownYearsCount) {
         
         resetYears();
         
-        this.yearsCount = yearsCount;
+        this.dropdownYearsCount = dropdownYearsCount;
         setCurrentYear(currentYear);
         fixedRange = false;
         updateUI();
@@ -190,7 +186,7 @@ public class ListBoxMonthSelector extends MonthSelector {
 
     /**         
      * Generates and stores in a field {@link #years}
-     * the list of years with the size of {@link #yearsCount}.
+     * the list of years with the size of {@link #dropdownYearsCount}.
      * <br><br>
      * @param baseYear - base year; must be > 0.
      */
@@ -199,11 +195,11 @@ public class ListBoxMonthSelector extends MonthSelector {
         if (baseYear < 0)
             throw new IllegalArgumentException("Base year must be > 0!");
         
-        int shift = yearsCount/2;
+        int shift = dropdownYearsCount/2;
         int firstYear = baseYear - shift;
-        this.years = new String[yearsCount];
+        this.years = new String[dropdownYearsCount];
 
-        for (int i = firstYear; i < firstYear + yearsCount; i++) {
+        for (int i = firstYear; i < firstYear + dropdownYearsCount; i++) {
                 this.years[i - firstYear] = formatYear(i);
         } 
     }
@@ -284,7 +280,19 @@ public class ListBoxMonthSelector extends MonthSelector {
             throw new RuntimeException("Can't set month " + MONTH_FORMAT.format(currentMonth) + 
                                         " in " + getClass().getName());
         
-//        currentMonthLabel.setText(MONTH_FORMAT_LABEL.format(currentMonth));
+        currentMonthLabel.setText(MONTH_FORMAT_LABEL.format(currentMonth));
+
+        currentMonthPanel.clear();
+        if(dropdownVisible) {
+            currentMonthPanel.add(monthsDropdown);
+            currentMonthPanel.add(yearsDropdown);
+        } else {
+            currentMonthPanel.add(currentMonthLabel);
+        }
+        
+        prevYearButton.setVisible(yearsButtonsVisible);
+        nextYearButton.setVisible(yearsButtonsVisible);
+    
         
     }
     
@@ -346,6 +354,28 @@ public class ListBoxMonthSelector extends MonthSelector {
         return !fixedRange || getCurrentYear() < maxYear;
     }
     
+    public void setDropdownVisible(boolean dropdownVisible) {
+        this.dropdownVisible = dropdownVisible;
+        updateUI();
+    }
+    
+    public boolean isDropdownVisible() {
+        return dropdownVisible;
+    }
+    
+    public void setYearsButtonsVisible(boolean yearsButtonsVisible) {
+        this.yearsButtonsVisible = yearsButtonsVisible;
+        updateUI();
+    }
+    
+    public boolean isYearsButtonsVisible() {
+        return yearsButtonsVisible;
+    }
+    
+    public int getDropdownYearsCount() {
+        return dropdownYearsCount;
+    }
+    
 //    private void updateNextButtonsState(){
 //
 //        if(!hasNextMonth()) {
@@ -395,10 +425,6 @@ public class ListBoxMonthSelector extends MonthSelector {
         return String.valueOf(year);
     }
     
-    protected int getYearsCount() {
-        return yearsCount;
-    }
-    
     private boolean yearsBuilded(){
         return years != null && years.length > 0;
     }
@@ -407,7 +433,7 @@ public class ListBoxMonthSelector extends MonthSelector {
         years = null;
         this.minYear = 0;
         this.maxYear = 0;
-        this.yearsCount = 0;
+        this.dropdownYearsCount = 0;
     }
     
     

@@ -13,9 +13,12 @@ import com.google.gwt.user.datepicker.client.DefaultCalendarView;
  */
 public class ListBoxDatePicker extends DatePicker {
 
+    private ListBoxMonthSelector monthSelector;
+    
     public ListBoxDatePicker() {
         super(new ListBoxMonthSelector(), new DefaultCalendarView(),
                 new CalendarModel());
+        monthSelector = (ListBoxMonthSelector) getMonthSelector();
     }
   
     /**
@@ -25,7 +28,7 @@ public class ListBoxDatePicker extends DatePicker {
      * @param maxYear - last year of the range 
      */
     public void setFixedYearsRange(int minYear, int maxYear) {
-        ((ListBoxMonthSelector)getMonthSelector()).setFixedYearsRange(minYear, maxYear);
+        monthSelector.setFixedYearsRange(minYear, maxYear);
         ((DefaultCalendarView) getView()).refresh();
     }
 
@@ -36,8 +39,38 @@ public class ListBoxDatePicker extends DatePicker {
      * @param yearsCount - size of the years select menu
      */
     public void setFloatingYearsRange(int currentYear, int yearsCount) {
-        ((ListBoxMonthSelector) getMonthSelector()).setFloatingYearsRange(currentYear, yearsCount);
+        monthSelector.setFloatingYearsRange(currentYear, yearsCount);
         ((DefaultCalendarView) getView()).refresh();
     }
     
+    
+    @Override
+    public void setVisibleYearCount(int numberOfYears) {
+        monthSelector.setFloatingYearsRange(monthSelector.getCurrentYear(), numberOfYears);
+    }
+    
+    @Override
+    public int getVisibleYearCount() {
+        return monthSelector.getDropdownYearsCount();
+    }
+    
+    @Override
+    public void setYearAndMonthDropdownVisible(boolean dropdownVisible) {
+        monthSelector.setDropdownVisible(dropdownVisible);
+    }
+
+    @Override
+    public boolean isYearAndMonthDropdownVisible() {
+        return monthSelector.isDropdownVisible();
+    }
+    
+    @Override
+    public void setYearArrowsVisible(boolean yearArrowsVisible) {
+        monthSelector.setYearsButtonsVisible(yearArrowsVisible);
+    }
+    
+    @Override
+    public boolean isYearArrowsVisible() {
+        return monthSelector.isYearsButtonsVisible();
+    }
 }
