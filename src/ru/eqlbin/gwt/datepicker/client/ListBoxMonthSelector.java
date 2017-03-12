@@ -7,16 +7,21 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ShowRangeEvent;
+import com.google.gwt.event.logical.shared.ShowRangeHandler;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
+import com.google.gwt.user.datepicker.client.DatePicker;
 import com.google.gwt.user.datepicker.client.MonthSelector;
 
 
@@ -48,6 +53,10 @@ public class ListBoxMonthSelector extends MonthSelector {
 
     private int minYear;
     private int maxYear;
+    
+    private Date minDate;
+    private Date maxDate;
+    
     
     private int dropdownYearsCount = 21;
     
@@ -81,6 +90,29 @@ public class ListBoxMonthSelector extends MonthSelector {
         initYearsDropdown();
         initMonthsDropdown();
         initButtons(); 
+        
+//        final DatePicker datePicker = getDatePicker();
+        
+//        datePicker.addShowRangeHandler(new ShowRangeHandler<Date>() {
+//            
+//            @Override
+//            public void onShowRange(ShowRangeEvent<Date> event) {
+//                
+////                getDatePicker().setTransientEnabledOnDates(false, event.getStart());
+//                
+//                if(fixedRange == false) return;
+//                
+//                Date date = CalendarUtil.copyDate(event.getStart());
+//                
+//                while(date.before(minDate) || date.after(maxDate)) {
+////                    Window.alert(d + "");
+//                    getDatePicker().setTransientEnabledOnDates(false, date);
+//                    CalendarUtil.addDaysToDate(date, 1);
+//                }
+////                Window.alert(event.getStart() + " - " + event.getEnd());
+//                
+//            }
+//        });
     }
 
     @Override
@@ -170,6 +202,12 @@ public class ListBoxMonthSelector extends MonthSelector {
         
         this.minYear = minYear;
         this.maxYear = maxYear;
+        
+        this.minDate = new Date(minYear-1900, 0, 1);
+        CalendarUtil.resetTime(this.minDate);
+        this.maxDate = new Date(maxYear-1900, 11, 31);
+        CalendarUtil.resetTime(this.maxDate);
+        
         fixedRange = true;
         updateUI();
     }
