@@ -12,6 +12,7 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -254,11 +255,10 @@ public class ListBoxMonthSelector extends MonthSelector {
      * {@link com.google.gwt.user.datepicker.client.CalendarModel CalendarModel}
      */
     private void updateUI() { 
-        
         rebuildYearsDropdown();
         
         Date currentMonth = getModel().getCurrentMonth();
-        
+
         int year = currentMonth.getYear() + 1900;
         int month = currentMonth.getMonth();
         
@@ -293,7 +293,6 @@ public class ListBoxMonthSelector extends MonthSelector {
         prevYearButton.setVisible(yearsButtonsVisible);
         nextYearButton.setVisible(yearsButtonsVisible);
     
-        
     }
     
     /**
@@ -317,6 +316,7 @@ public class ListBoxMonthSelector extends MonthSelector {
         if(!hasNextMonth()) return;
         getModel().shiftCurrentMonth(1);
         updateUI();
+        updateModel();
     }
     
     
@@ -324,18 +324,21 @@ public class ListBoxMonthSelector extends MonthSelector {
         if(!hasPrevMonth()) return;
         getModel().shiftCurrentMonth(-1);
         updateUI();
+        updateModel();
     }
     
     private void nextYear() {
         if(!hasNextYear()) return;
         getModel().shiftCurrentMonth(12);
         updateUI();
+        updateModel();
     }
     
     private void prevYear() {
         if(!hasPrevYear()) return;
         getModel().shiftCurrentMonth(-12);
         updateUI();
+        updateModel();
     }
     
     private boolean hasPrevMonth(){
