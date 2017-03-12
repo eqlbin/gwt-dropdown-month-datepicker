@@ -263,7 +263,6 @@ public class ListBoxMonthSelector extends MonthSelector {
         int month = currentMonth.getMonth();
         
         boolean yearSetted = false;
-        boolean monthSetted = false;
         
         for (int i = 0; i < yearsDropdown.getItemCount(); i++) {
             if (yearsDropdown.getItemText(i).equals(String.valueOf(year))) {
@@ -274,11 +273,9 @@ public class ListBoxMonthSelector extends MonthSelector {
         }
                 
         monthsDropdown.setSelectedIndex(month);
-        monthSetted = true;
         
-        if(!yearSetted || !monthSetted)
-            throw new RuntimeException("Can't set month " + MONTH_FORMAT.format(currentMonth) + 
-                                        " in " + getClass().getName());
+        if(!yearSetted)
+            throw new RuntimeException("Can't set year " + year + " in dropdown menu!");
         
         currentMonthLabel.setText(MONTH_FORMAT_LABEL.format(currentMonth));
 
@@ -292,8 +289,8 @@ public class ListBoxMonthSelector extends MonthSelector {
         
         prevYearButton.setVisible(yearsButtonsVisible);
         nextYearButton.setVisible(yearsButtonsVisible);
-    
         
+        updateNextButtonsState();
     }
     
     /**
@@ -376,20 +373,32 @@ public class ListBoxMonthSelector extends MonthSelector {
         return dropdownYearsCount;
     }
     
-//    private void updateNextButtonsState(){
-//
-//        if(!hasNextMonth()) {
-//            nextMonthButton.setEnabled(false);
-//        } else {
-//            nextMonthButton.setEnabled(true);
-//        }
-//        
-//        if(!hasNextYear()) {
-//            nextYearButton.setEnabled(false);
-//        } else {
-//            nextYearButton.setEnabled(true);
-//        }
-//    }
+    private void updateNextButtonsState(){
+
+        if(!hasNextMonth()) {
+            nextMonthButton.setEnabled(false);
+        } else {
+            nextMonthButton.setEnabled(true);
+        }
+        
+        if(!hasNextYear()) {
+            nextYearButton.setEnabled(false);
+        } else {
+            nextYearButton.setEnabled(true);
+        }
+        
+        if(!hasPrevMonth()) {
+            prevMonthButton.setEnabled(false);
+        } else {
+            prevMonthButton.setEnabled(true);
+        }
+        
+        if(!hasPrevYear()) {
+            prevYearButton.setEnabled(false);
+        } else {
+            prevYearButton.setEnabled(true);
+        }
+    }
 
     protected void setCurrentYear(int year){
         getModel().getCurrentMonth().setYear(year - 1900);
