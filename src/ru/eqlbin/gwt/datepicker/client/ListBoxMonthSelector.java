@@ -254,11 +254,10 @@ public class ListBoxMonthSelector extends MonthSelector {
      * {@link com.google.gwt.user.datepicker.client.CalendarModel CalendarModel}
      */
     private void updateUI() { 
-        
         rebuildYearsDropdown();
         
         Date currentMonth = getModel().getCurrentMonth();
-        
+
         int year = currentMonth.getYear() + 1900;
         int month = currentMonth.getMonth();
         
@@ -314,6 +313,7 @@ public class ListBoxMonthSelector extends MonthSelector {
         if(!hasNextMonth()) return;
         getModel().shiftCurrentMonth(1);
         updateUI();
+        updateModel();
     }
     
     
@@ -321,18 +321,21 @@ public class ListBoxMonthSelector extends MonthSelector {
         if(!hasPrevMonth()) return;
         getModel().shiftCurrentMonth(-1);
         updateUI();
+        updateModel();
     }
     
     private void nextYear() {
         if(!hasNextYear()) return;
         getModel().shiftCurrentMonth(12);
         updateUI();
+        updateModel();
     }
     
     private void prevYear() {
         if(!hasPrevYear()) return;
         getModel().shiftCurrentMonth(-12);
         updateUI();
+        updateModel();
     }
     
     private boolean hasPrevMonth(){
