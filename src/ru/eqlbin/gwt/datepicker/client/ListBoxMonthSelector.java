@@ -195,6 +195,8 @@ public class ListBoxMonthSelector extends MonthSelector {
             @Override
             public void onValueChange(ValueChangeEvent<Date> event) {
                 
+                if(!fixedRange) return;
+                
                 DatePicker datePicker = getDatePicker();
                 Date newDate = event.getValue();
                 
