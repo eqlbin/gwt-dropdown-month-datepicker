@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
 
 import ru.eqlbin.gwt.datepicker.client.ListBoxDatePicker;
 
@@ -50,7 +51,7 @@ public class ListBoxDatePickerExample implements EntryPoint {
         int yearsCount = 10;
         
         datePickerFloating = new ListBoxDatePicker();
-        datePickerFloating.setFloatingYearsRange(currentYear, yearsCount);
+        datePickerFloating.setVisibleYearCount(yearsCount);
         
         final Label currentYearLabel = new Label("Current year:"); 
         final Label yearsCountLabel = new Label("Years count:"); 
@@ -99,7 +100,7 @@ public class ListBoxDatePickerExample implements EntryPoint {
                     return;
                 }
                 
-                datePickerFloating.setFloatingYearsRange(currentYear, yearsCount);
+                datePickerFloating.setVisibleYearCount(yearsCount);
             }
         });
         
@@ -117,21 +118,27 @@ public class ListBoxDatePickerExample implements EntryPoint {
     @SuppressWarnings("deprecation")
     private Widget createFixedDatePickerExample() {
         
-        int currentYear = new Date().getYear() + 1900;
-        int minYear = currentYear - 5;
-        int maxYear = currentYear + 5;
+        final DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy-MM-dd");
+        
+        Date currentDate = new Date();
+        
+        Date minDate = CalendarUtil.copyDate(currentDate);
+        CalendarUtil.addMonthsToDate(minDate, -12 * 5);
+        
+        Date maxDate = CalendarUtil.copyDate(currentDate);
+        CalendarUtil.addMonthsToDate(maxDate, 12 * 5);
         
         datePickerFixed = new ListBoxDatePicker();
-        datePickerFixed.setFixedYearsRange(minYear, maxYear);
+        datePickerFixed.setDateRange(minDate, maxDate);
         
-        final Label minYearLabel = new Label("Min year:"); 
-        final Label maxYearLabel = new Label("Max year:"); 
+        final Label minYearLabel = new Label("Min date:"); 
+        final Label maxYearLabel = new Label("Max date:"); 
         final Label selectedDateLabel = new Label();
         
         final TextBox minYearInput = new TextBox();
-        minYearInput.setText(String.valueOf(minYear));
+        minYearInput.setText(dateFormat.format(minDate));
         final TextBox maxYearInput = new TextBox();
-        maxYearInput.setText(String.valueOf(maxYear));
+        maxYearInput.setText(dateFormat.format(maxDate));
         
         final Button setRangeButton = new Button("Set range");
 
@@ -157,16 +164,17 @@ public class ListBoxDatePickerExample implements EntryPoint {
         
         setRangeButton.addClickHandler(new ClickHandler() {
             @Override
-            public void onClick(ClickEvent event) {               
-                int minYear = Integer.parseInt(minYearInput.getValue());
-                int maxYear = Integer.parseInt(maxYearInput.getValue());
+            public void onClick(ClickEvent event) {     
                 
-                if(minYear <= 0 || maxYear <= 0 || minYear > maxYear ) {
-                    Window.alert("Wrong fixed range of years!" );
-                    return;
-                }
+                Date minDate = dateFormat.parse(minYearInput.getValue());
+                Date maxDate = dateFormat.parse(maxYearInput.getValue());
                 
-                datePickerFixed.setFixedYearsRange(minYear, maxYear);
+//                if(minYear <= 0 || maxYear <= 0 || minYear > maxYear ) {
+//                    Window.alert("Wrong fixed range of years!" );
+//                    return;
+//                }
+                
+                datePickerFixed.setDateRange(minDate, maxDate);
             }
         });
 
@@ -225,15 +233,10 @@ public class ListBoxDatePickerExample implements EntryPoint {
             @SuppressWarnings("deprecation")
             @Override
             public void onClick(ClickEvent event) {
-                datePickerFixed.setFloatingYearsRange(
-                        datePickerFixed.getCurrentMonth().getYear() + 1900, 
-                        Integer.parseInt(yearCountInput.getValue()));
-                datePickerFloating.setFloatingYearsRange(
-                        datePickerFixed.getCurrentMonth().getYear() + 1900, 
-                        Integer.parseInt(yearCountInput.getValue()));
+                datePickerFixed.setVisibleYearCount(Integer.parseInt(yearCountInput.getValue()));
+                datePickerFloating.setVisibleYearCount(Integer.parseInt(yearCountInput.getValue()));
             }
         });
-        
         
         return grid;
     }

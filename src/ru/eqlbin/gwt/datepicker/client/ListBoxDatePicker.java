@@ -22,39 +22,14 @@ public class ListBoxDatePicker extends DatePicker {
                 new CalendarModel());
         monthSelector = (ListBoxMonthSelector) getMonthSelector();
     }
-  
-    /**
-     * Sets the floating range of years
-     * 
-     * @param minYear - first year of the range
-     * @param maxYear - last year of the range 
-     */
-    public void setFixedYearsRange(int minYear, int maxYear) {
-        monthSelector.setFixedYearsRange(minYear, maxYear);
-        ((DefaultCalendarView) getView()).refresh();
-    }
     
-    public void setFixedDateRange(Date minDate, Date maxDate) {
-        monthSelector.setFixedDateRange(minDate, maxDate);
-        ((DefaultCalendarView) getView()).refresh();
+    public void setDateRange(Date minDate, Date maxDate) {
+        monthSelector.setDateRange(minDate, maxDate);
     }
-
-
-    /**
-     * Sets the floating range of years
-     * 
-     * @param currentYear - current selected year
-     * @param yearsCount - size of the years select menu
-     */
-    public void setFloatingYearsRange(int currentYear, int yearsCount) {
-        monthSelector.setFloatingYearsRange(currentYear, yearsCount);
-        ((DefaultCalendarView) getView()).refresh();
-    }
-    
     
     @Override
     public void setVisibleYearCount(int numberOfYears) {
-        monthSelector.setFloatingYearsRange(monthSelector.getCurrentYear(), numberOfYears);
+        monthSelector.setDropdownYearsCount(numberOfYears);
     }
     
     @Override

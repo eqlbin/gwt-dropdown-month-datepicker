@@ -52,12 +52,14 @@ public class ListBoxMonthSelector extends MonthSelector {
     
     private static final int DEFAULT_DROPDOWN_YEARS_COUNT = 31;
     
+    // localized short month names
+    String[] monthNames = LocaleInfo.getCurrentLocale()
+            .getDateTimeFormatInfo().monthsShortStandalone();
+    
     private Date minDate;
     private Date maxDate;
     
     private int dropdownYearsCount = DEFAULT_DROPDOWN_YEARS_COUNT;
-    
-    private boolean fixedRange = false;
     private boolean dropdownVisible = true;
     private boolean yearsButtonsVisible = true;
     
@@ -113,17 +115,8 @@ public class ListBoxMonthSelector extends MonthSelector {
      * Initializes the {@link #monthsDropdown}
      */
     private void initMonthsDropdown() {
-        
         monthsDropdown.setMultipleSelect(false);
         monthsDropdown.setVisibleItemCount(1);
-        
-        // localized short month names
-        String[] monthNames = LocaleInfo.getCurrentLocale()
-                                .getDateTimeFormatInfo().monthsShortStandalone();
-        for (String monthName : monthNames) {
-            monthsDropdown.addItem(monthName);
-        }
-        
         monthsDropdown.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
@@ -172,7 +165,7 @@ public class ListBoxMonthSelector extends MonthSelector {
             @Override
             public void onShowRange(ShowRangeEvent<Date> event) {
                 
-                if(!fixedRange) return;
+                if(!isRangeSet()) return;
                 
                 Date date = CalendarUtil.copyDate(event.getStart());
                 
@@ -192,7 +185,7 @@ public class ListBoxMonthSelector extends MonthSelector {
             @Override
             public void onValueChange(ValueChangeEvent<Date> event) {
                 
-                if(!fixedRange) return;
+                if(!isRangeSet()) return;
                 
                 DatePicker datePicker = getDatePicker();
                 Date newDate = event.getValue();
@@ -212,14 +205,7 @@ public class ListBoxMonthSelector extends MonthSelector {
         });
     }
     
-    public void setFixedYearsRange(int minYear, int maxYear) {
-        setFixedDateRange(new Date(minYear-1900, 0, 1), new Date(maxYear-1900, 11, 31));
-    }
-    
-    public void setFixedDateRange(Date minDate, Date maxDate) {
-        
-        resetRange();
-        fixedRange = true;
+    public void setDateRange(Date minDate, Date maxDate) {
 
         this.minDate = CalendarUtil.copyDate(minDate);
         CalendarUtil.resetTime(this.minDate);
@@ -235,61 +221,38 @@ public class ListBoxMonthSelector extends MonthSelector {
             setCurrentYear(currentYear);
         }
         
-        updateUI();
+        refreshAll();
     }
     
-    public void setFloatingYearsRange(int currentYear, int dropdownYearsCount) {
-        
-        resetRange();
-        fixedRange = false;
-        
+    public void setDropdownYearsCount(int dropdownYearsCount) {
         this.dropdownYearsCount = dropdownYearsCount;
-        setCurrentYear(currentYear);
-        updateUI();
+        refreshAll();
     }
-    
-    /**         
-     * Generates and stores in a field {@link #years}
-     * the list of years with the size of {@link #dropdownYearsCount}.
-     * <br><br>
-     * @param baseYear - base year; must be > 0.
-     */
-    private int[] buildYearsByCount(int baseYear){
-        if (baseYear < 0)
-            throw new IllegalArgumentException("Base year must be > 0!");
+
+    private int[] buildYearsList(){
         
+        int startYear = -1;
+        int endYear = -1;
+        
+        int currentYear = getCurrentYear();
         int shift = dropdownYearsCount/2;
-        int firstYear = baseYear - shift;
-        int[] years = new int[dropdownYearsCount];
-
-        for (int year = firstYear; year < firstYear + dropdownYearsCount; year++) {
-                years[year - firstYear] = year;
+        
+        startYear = currentYear - shift;
+        endYear = startYear + dropdownYearsCount - 1;
+        
+        if(isRangeSet()) {
+            int minYear = getMinYear();
+            int maxYear = getMaxYear();
+            
+            if(startYear < minYear) startYear = minYear;
+            if(endYear > maxYear) endYear = maxYear;
         } 
-        
-        return years;
-    }
-    
-    /**
-     * Generates and stores in a field {@link #years}
-     * a list of years from first to last, inclusive
-     * 
-     * @param minYear - first year in the list
-     * @param maxYear - last year in the list
-     */
-    private int[] buildYearsByRange(){
-        
-        int minYear = getMinYear();
-        int maxYear = getMaxYear();
-        
-        if (maxYear < minYear) throw 
-            new IllegalArgumentException("Max year must be >= min year");
-        if (minYear < 1 || maxYear < 1) throw 
-            new IllegalArgumentException("Years must be > 0");
 
+        int size = endYear - startYear + 1;
+        int[] years = new int[size];
         
-        int[] years = new int[maxYear - minYear + 1];
-        for (int year = minYear; year <= maxYear; year++) {
-                years[year - minYear] = year;
+        for (int year = startYear; year <= endYear; year++) {
+                years[year - startYear] = year;
         }
         
         return years;
@@ -302,20 +265,50 @@ public class ListBoxMonthSelector extends MonthSelector {
      */
     private void rebuildYearsDropdown() {
 
-        int[] years = new int[0];
+        int[] years = buildYearsList();
         
-        if(fixedRange) {
-            years = buildYearsByRange();
-        } else {
-            years = buildYearsByCount(getCurrentYear());
-        }
-
         this.yearsDropdown.clear();
         for (int i=0; i<years.length; i++) {
             this.yearsDropdown.addItem(formatYear(years[i]));
         }
+        
+        int currentYear = getCurrentYear();
+        boolean yearSet = false;
+        
+        for (int i = 0; i < yearsDropdown.getItemCount(); i++) {
+            if (yearsDropdown.getItemText(i).equals(String.valueOf(currentYear))) {
+                yearsDropdown.setSelectedIndex(i);
+                yearSet = true;
+                break;
+            }
+        }
+
+        if(!yearSet)
+            throw new RuntimeException("Can't select nonexistent year " 
+                                        + currentYear + " in dropdown menu!");
     }
     
+    private void rebuildMonthsDropdown() {
+        
+        int startMonth = 0;
+        int endMonth = 11;
+        
+        int currentYear = getCurrentYear();
+        
+        if(currentYear == getMinYear())
+            startMonth = minDate.getMonth();
+        
+        if(currentYear == getMaxYear())
+            endMonth = maxDate.getMonth();
+
+        monthsDropdown.clear();
+        for (int i = startMonth; i <= endMonth; i++) {
+            monthsDropdown.addItem(monthNames[i]);
+        }
+        
+        Date currentMonth = getModel().getCurrentMonth();
+        monthsDropdown.setSelectedIndex(currentMonth.getMonth() - startMonth);
+    }
     
     /**
      * Sets the values ​​in the components {@link #yearsDropdown}
@@ -323,40 +316,27 @@ public class ListBoxMonthSelector extends MonthSelector {
      * {@link com.google.gwt.user.datepicker.client.CalendarModel CalendarModel}
      */
     private void updateUI() { 
+
+        Date currentMonth = CalendarUtil.copyDate(getModel().getCurrentMonth());
         
-        Date currentMonth = getModel().getCurrentMonth();
-        
-        /*
-         * If month is not in range then update model by old
-         * dropdowns values (before rebuildYearsDropdown and 
-         * monthsDropdown.setSelectedIndex).
-         */
-        if(!isMonthInRange(currentMonth)) {
-            Date outOfRangeMonth = CalendarUtil.copyDate(currentMonth);
-            updateModel();
-            throw new MonthOutOfRangeException("Month is out of range: " + outOfRangeMonth);
+        if(isBeforeMinMonth(currentMonth)) {
+            getModel().setCurrentMonth(minDate);
+            refreshAll();
+            return;
+//            throw new MonthOutOfRangeException(
+//                    "The month " + MONTH_FORMAT.format(currentMonth) 
+//                     + " is before the minimum month " + MONTH_FORMAT.format(minDate));
+        } else if(isAfterMaxMonth(currentMonth)) {
+            getModel().setCurrentMonth(maxDate);
+            refreshAll();
+            return;
+//            throw new MonthOutOfRangeException(
+//                    "The month " + MONTH_FORMAT.format(currentMonth) 
+//                     + " is after the maximum month " + MONTH_FORMAT.format(maxDate));
         }
-        
-        int year = currentMonth.getYear() + 1900;
-        int month = currentMonth.getMonth();
         
         rebuildYearsDropdown();
-        
-        monthsDropdown.setSelectedIndex(month);
-
-        boolean yearSetted = false;
-        
-        for (int i = 0; i < yearsDropdown.getItemCount(); i++) {
-            if (yearsDropdown.getItemText(i).equals(String.valueOf(year))) {
-                yearsDropdown.setSelectedIndex(i);
-                yearSetted = true;
-                break;
-            }
-        }
-
-        if(!yearSetted)
-            throw new RuntimeException(
-                    "Can't select nonexistent year " + year + " in dropdown menu!");
+        rebuildMonthsDropdown();
         
         currentMonthLabel.setText(MONTH_FORMAT_LABEL.format(currentMonth));
 
@@ -394,55 +374,51 @@ public class ListBoxMonthSelector extends MonthSelector {
     private void nextMonth() {
         if(!hasNextMonth()) return;
         getModel().shiftCurrentMonth(1);
-        updateUI();
-        updateModel();
+        refreshAll();
     }
-    
     
     private void prevMonth() {
         if(!hasPrevMonth()) return;
         getModel().shiftCurrentMonth(-1);
-        updateUI();
-        updateModel();
+        refreshAll();
     }
     
     private void nextYear() {
         if(!hasNextYear()) return;
         getModel().shiftCurrentMonth(12);
-        updateUI();
-        updateModel();
+        refreshAll();
     }
     
     private void prevYear() {
         if(!hasPrevYear()) return;
         getModel().shiftCurrentMonth(-12);
-        updateUI();
-        updateModel();
+        refreshAll();
     }
     
     private boolean hasPrevMonth(){
         Date prevMonth = CalendarUtil.copyDate(getModel().getCurrentMonth());
         CalendarUtil.addMonthsToDate(prevMonth, -1);
-        return isMonthInRange(prevMonth);
+
+        return !isBeforeMinMonth(prevMonth);
     }
     
     private boolean hasNextMonth(){
         Date nextMonth = CalendarUtil.copyDate(getModel().getCurrentMonth());
         CalendarUtil.addMonthsToDate(nextMonth, 1);
-        return isMonthInRange(nextMonth);
+        return !isAfterMaxMonth(nextMonth);
     }
     
     private boolean hasPrevYear(){
-        return !fixedRange || getCurrentYear() > getMinYear();
+        return !isRangeSet() || getCurrentYear() > getMinYear();
     }
     
     private boolean hasNextYear(){
-        return !fixedRange || getCurrentYear() < getMaxYear();
+        return !isRangeSet() || getCurrentYear() < getMaxYear();
     }
     
     public void setDropdownVisible(boolean dropdownVisible) {
         this.dropdownVisible = dropdownVisible;
-        updateUI();
+        refreshAll();
     }
     
     public boolean isDropdownVisible() {
@@ -451,7 +427,7 @@ public class ListBoxMonthSelector extends MonthSelector {
     
     public void setYearsButtonsVisible(boolean yearsButtonsVisible) {
         this.yearsButtonsVisible = yearsButtonsVisible;
-        updateUI();
+        refreshAll();
     }
     
     public boolean isYearsButtonsVisible() {
@@ -513,40 +489,50 @@ public class ListBoxMonthSelector extends MonthSelector {
         return String.valueOf(year);
     }
         
-    private void resetRange(){
-        fixedRange = false;
+    public void resetRange(){
         this.minDate = null;
         this.maxDate = null;
         this.dropdownYearsCount = DEFAULT_DROPDOWN_YEARS_COUNT;
+        refreshAll();
     }
     
     public boolean isDateInRange(Date date) {
-        if(!fixedRange) return true;
+        if(!isRangeSet()) return true;
         return !(date.before(minDate) || date.after(maxDate));
     }
     
-    public boolean isMonthInRange(Date month) {
-        if(!fixedRange) return true;
+    public boolean isBeforeMinMonth(Date month) {
+        if(!isRangeSet()) return false;
         
         Date minMonth = CalendarUtil.copyDate(minDate);
         CalendarUtil.setToFirstDayOfMonth(minMonth);
+
+        return month.before(minMonth);
+    }
+    
+    public boolean isAfterMaxMonth(Date month) {
+        if(!isRangeSet()) return false;
         
         Date maxMonth = CalendarUtil.copyDate(maxDate);
         CalendarUtil.setToFirstDayOfMonth(maxMonth);
         
-        return !(month.before(minMonth) || month.after(maxMonth));
+        return month.after(maxMonth);
     }
         
     public boolean isYearInRange(int year) {
-        if(!fixedRange) return true;
+        if(!isRangeSet()) return true;
         return !(year < getMinYear() || year > getMaxYear());
     }
     
     private int getMinYear(){
-        return fixedRange ? minDate.getYear() + 1900 : -1;
+        return isRangeSet() ? minDate.getYear() + 1900 : -1;
     }
     
     private int getMaxYear(){
-        return fixedRange ? maxDate.getYear() + 1900 : -1;
+        return isRangeSet() ? maxDate.getYear() + 1900 : -1;
+    }
+    
+    private boolean isRangeSet(){
+        return minDate != null && maxDate != null;
     }
 }
