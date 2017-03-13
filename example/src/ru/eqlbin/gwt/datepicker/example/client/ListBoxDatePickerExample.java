@@ -8,7 +8,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.shared.DateTimeFormat;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Grid;
@@ -27,9 +26,7 @@ import ru.eqlbin.gwt.datepicker.client.ListBoxDatePicker;
  */
 public class ListBoxDatePickerExample implements EntryPoint {
     
-    
     private static final DateTimeFormat DATE_FORMAT = DateTimeFormat.getFormat("yyyy-MM-dd");
-
     
     private ListBoxDatePicker datePickerFloating;
     private ListBoxDatePicker datePickerFixed;
@@ -38,71 +35,21 @@ public class ListBoxDatePickerExample implements EntryPoint {
      * This is the entry point method.
      */
     public void onModuleLoad() {
-  
         RootPanel.get("datePickerFloatingExample").add(createFloatingDatePickerExample());
         RootPanel.get("datePickerFixedExample").add(createFixedDatePickerExample());
-        RootPanel.get("defaultMethodsExample").add(createDefaultMethodsExample());
+        RootPanel.get("defaultMethodsExample").add(createMethodsExample());
     }
-
 
     public Widget createFloatingDatePickerExample() {
         
-        int currentYear = 2015;
-        int yearsCount = 10;
-        
         datePickerFloating = new ListBoxDatePicker();
-        datePickerFloating.setVisibleYearCount(yearsCount);
         
-        final Label currentYearLabel = new Label("Current year:"); 
-        final Label yearsCountLabel = new Label("Years count:"); 
         final Label selectedDateLabel = new Label();
-        
-        final TextBox currentYearInputBox = new TextBox();
-        currentYearInputBox.setText(String.valueOf(currentYear));
-        final TextBox yearCountInput = new TextBox();
-        yearCountInput.setText(String.valueOf(yearsCount));
-        
-        final Button setRangeButton = new Button("Set range");
         
         VerticalPanel datePickerPanel = new VerticalPanel();
         datePickerPanel.setSpacing(5);
         datePickerPanel.add(datePickerFloating);
         datePickerPanel.add(selectedDateLabel);
-        
-        VerticalPanel yearsRangePanel = new VerticalPanel();
-        yearsRangePanel.setSpacing(5);
-        yearsRangePanel.add(currentYearLabel);
-        yearsRangePanel.add(currentYearInputBox);
-        yearsRangePanel.add(yearsCountLabel);
-        yearsRangePanel.add(yearCountInput);
-        yearsRangePanel.add(setRangeButton);
-        
-        HorizontalPanel mainPanel = new HorizontalPanel();
-        mainPanel.setWidth("500px");
-        mainPanel.setSpacing(10);
-        mainPanel.add(datePickerPanel);
-        mainPanel.add(yearsRangePanel);
-        
-        setRangeButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                
-                int currentYear = Integer.parseInt(currentYearInputBox.getValue());
-                int yearsCount = Integer.parseInt(yearCountInput.getValue());
-                
-                if(currentYear < 0) {
-                    Window.alert("Current year must be > -1!");
-                    return;
-                }
-                
-                if(yearsCount <= 0) {
-                    Window.alert("Years count must be > 0");
-                    return;
-                }
-                
-                datePickerFloating.setVisibleYearCount(yearsCount);
-            }
-        });
         
         datePickerFloating.addValueChangeHandler(new ValueChangeHandler<Date>() {
             @Override
@@ -112,21 +59,23 @@ public class ListBoxDatePickerExample implements EntryPoint {
             }
         });
         
-        return mainPanel;
+        return datePickerPanel;
     }
     
-    @SuppressWarnings("deprecation")
     private Widget createFixedDatePickerExample() {
         
         final DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy-MM-dd");
         
         Date currentDate = new Date();
-        
+
         Date minDate = CalendarUtil.copyDate(currentDate);
         CalendarUtil.addMonthsToDate(minDate, -12 * 5);
+        CalendarUtil.setToFirstDayOfMonth(minDate);
         
         Date maxDate = CalendarUtil.copyDate(currentDate);
-        CalendarUtil.addMonthsToDate(maxDate, 12 * 5);
+        CalendarUtil.addMonthsToDate(maxDate, 12 * 5 + 1);
+        CalendarUtil.setToFirstDayOfMonth(maxDate);
+        CalendarUtil.addDaysToDate(maxDate, -1);
         
         datePickerFixed = new ListBoxDatePicker();
         datePickerFixed.setDateRange(minDate, maxDate);
@@ -160,20 +109,12 @@ public class ListBoxDatePickerExample implements EntryPoint {
         mainPanel.setSpacing(10);
         mainPanel.add(datePickerPanel);
         mainPanel.add(yearsRangePanel);
-
         
         setRangeButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {     
-                
                 Date minDate = dateFormat.parse(minYearInput.getValue());
                 Date maxDate = dateFormat.parse(maxYearInput.getValue());
-                
-//                if(minYear <= 0 || maxYear <= 0 || minYear > maxYear ) {
-//                    Window.alert("Wrong fixed range of years!" );
-//                    return;
-//                }
-                
                 datePickerFixed.setDateRange(minDate, maxDate);
             }
         });
@@ -189,8 +130,7 @@ public class ListBoxDatePickerExample implements EntryPoint {
         return mainPanel;
     }
     
-    
-    private Widget createDefaultMethodsExample(){
+    private Widget createMethodsExample(){
         
         final CheckBox setYearAndMonthDropdownVisibleCheck = new CheckBox("setYearAndMonthDropdownVisible");
         setYearAndMonthDropdownVisibleCheck.setValue(true);
@@ -209,9 +149,7 @@ public class ListBoxDatePickerExample implements EntryPoint {
         grid.setWidget(1, 0, yearCountInput);
         grid.setWidget(1, 1, setVisibleYearCountButton);
         
-        
         setYearAndMonthDropdownVisibleCheck.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-            
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
                 datePickerFixed.setYearAndMonthDropdownVisible(event.getValue());                
@@ -220,7 +158,6 @@ public class ListBoxDatePickerExample implements EntryPoint {
         });
         
         setYearArrowsVisibleCheck.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-            
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
                 datePickerFixed.setYearArrowsVisible(event.getValue());                
@@ -229,8 +166,6 @@ public class ListBoxDatePickerExample implements EntryPoint {
         });
         
         setVisibleYearCountButton.addClickHandler(new ClickHandler() {
-            
-            @SuppressWarnings("deprecation")
             @Override
             public void onClick(ClickEvent event) {
                 datePickerFixed.setVisibleYearCount(Integer.parseInt(yearCountInput.getValue()));
@@ -240,6 +175,5 @@ public class ListBoxDatePickerExample implements EntryPoint {
         
         return grid;
     }
-    
     
 }
