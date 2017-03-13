@@ -9,12 +9,13 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ShowRangeEvent;
 import com.google.gwt.event.logical.shared.ShowRangeHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -57,7 +58,6 @@ public class ListBoxMonthSelector extends MonthSelector {
     private Date minDate;
     private Date maxDate;
     
-    
     private int dropdownYearsCount = 21;
     
     private boolean fixedRange = false;
@@ -78,8 +78,7 @@ public class ListBoxMonthSelector extends MonthSelector {
     
     private static ListBoxMonthSelectorUiBinder uiBinder = GWT.create(ListBoxMonthSelectorUiBinder.class);
 
-    interface ListBoxMonthSelectorUiBinder extends UiBinder<Widget, ListBoxMonthSelector> {
-    }
+    interface ListBoxMonthSelectorUiBinder extends UiBinder<Widget, ListBoxMonthSelector> {}
 
     public ListBoxMonthSelector() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -91,28 +90,7 @@ public class ListBoxMonthSelector extends MonthSelector {
         initMonthsDropdown();
         initButtons(); 
         
-//        final DatePicker datePicker = getDatePicker();
-        
-//        datePicker.addShowRangeHandler(new ShowRangeHandler<Date>() {
-//            
-//            @Override
-//            public void onShowRange(ShowRangeEvent<Date> event) {
-//                
-////                getDatePicker().setTransientEnabledOnDates(false, event.getStart());
-//                
-//                if(fixedRange == false) return;
-//                
-//                Date date = CalendarUtil.copyDate(event.getStart());
-//                
-//                while(date.before(minDate) || date.after(maxDate)) {
-////                    Window.alert(d + "");
-//                    getDatePicker().setTransientEnabledOnDates(false, date);
-//                    CalendarUtil.addDaysToDate(date, 1);
-//                }
-////                Window.alert(event.getStart() + " - " + event.getEnd());
-//                
-//            }
-//        });
+        addRangeChecksForDatepicker();
     }
 
     @Override
@@ -189,23 +167,73 @@ public class ListBoxMonthSelector extends MonthSelector {
         });
     }
     
+    private void addRangeChecksForDatepicker(){
+        final DatePicker datePicker = getDatePicker();
+
+        datePicker.addShowRangeHandler(new ShowRangeHandler<Date>() {
+            
+            @Override
+            public void onShowRange(ShowRangeEvent<Date> event) {
+                
+                if(!fixedRange) return;
+                
+                Date date = CalendarUtil.copyDate(event.getStart());
+                
+                while(!date.after(event.getEnd())) {
+                    
+                    if(date.before(minDate) || date.after(maxDate)) {
+                        getDatePicker().setTransientEnabledOnDates(false, date);
+                    }
+
+                    CalendarUtil.addDaysToDate(date, 1);
+                }
+            }
+        });
+        
+        datePicker.addValueChangeHandler(new ValueChangeHandler<Date>() {
+            
+            @Override
+            public void onValueChange(ValueChangeEvent<Date> event) {
+                
+                DatePicker datePicker = getDatePicker();
+                Date newDate = event.getValue();
+                
+                if(newDate.before(minDate)) {
+                    datePicker.setValue(minDate);
+                    throw new DateOutOfRangeException("The date " + newDate + 
+                            " is before the minimum date " + minDate);
+                }
+                
+                if(newDate.after(maxDate)) {
+                    datePicker.setValue(maxDate);
+                    throw new DateOutOfRangeException("The date " + newDate + 
+                            " is after the maximum date " + maxDate);
+                }
+            }
+        });
+    }
+    
     public void setFixedYearsRange(int minYear, int maxYear) {
+        setFixedDateRange(new Date(minYear-1900, 0, 1), new Date(maxYear-1900, 11, 31));
+    }
+    
+    public void setFixedDateRange(Date minDate, Date maxDate) {
         
         resetYears();
         
         int currentYear = getCurrentYear();
+        
+        this.minYear = minDate.getYear() + 1900;
+        this.maxYear = maxDate.getYear() + 1900;
         
         if(currentYear < minYear || currentYear > maxYear) {
             currentYear = minYear + (maxYear - minYear)/2;
             setCurrentYear(currentYear);
         }
         
-        this.minYear = minYear;
-        this.maxYear = maxYear;
-        
-        this.minDate = new Date(minYear-1900, 0, 1);
+        this.minDate = CalendarUtil.copyDate(minDate);
         CalendarUtil.resetTime(this.minDate);
-        this.maxDate = new Date(maxYear-1900, 11, 31);
+        this.maxDate = CalendarUtil.copyDate(maxDate);
         CalendarUtil.resetTime(this.maxDate);
         
         fixedRange = true;
@@ -221,7 +249,7 @@ public class ListBoxMonthSelector extends MonthSelector {
         fixedRange = false;
         updateUI();
     }
-
+    
     /**         
      * Generates and stores in a field {@link #years}
      * the list of years with the size of {@link #dropdownYearsCount}.
@@ -262,8 +290,6 @@ public class ListBoxMonthSelector extends MonthSelector {
                 this.years[year - minYear] = formatYear(year);
         }
     }
-
-    
     
     /**
      * Rebuilds the component {@link #yearsDropdown}
@@ -292,13 +318,27 @@ public class ListBoxMonthSelector extends MonthSelector {
      * {@link com.google.gwt.user.datepicker.client.CalendarModel CalendarModel}
      */
     private void updateUI() { 
-        rebuildYearsDropdown();
         
         Date currentMonth = getModel().getCurrentMonth();
 
+        /*
+         * If month is not in range then update model by old
+         * dropdowns values (before rebuildYearsDropdown and 
+         * monthsDropdown.setSelectedIndex).
+         */
+        if(!isMonthInRange(currentMonth)) {
+            Date outOfRangeMonth = CalendarUtil.copyDate(currentMonth);
+            updateModel();
+            throw new MonthOutOfRangeException("Month is out of range: " + outOfRangeMonth);
+        }
+        
         int year = currentMonth.getYear() + 1900;
         int month = currentMonth.getMonth();
         
+        rebuildYearsDropdown();
+        
+        monthsDropdown.setSelectedIndex(month);
+
         boolean yearSetted = false;
         
         for (int i = 0; i < yearsDropdown.getItemCount(); i++) {
@@ -308,11 +348,10 @@ public class ListBoxMonthSelector extends MonthSelector {
                 break;
             }
         }
-                
-        monthsDropdown.setSelectedIndex(month);
-        
+
         if(!yearSetted)
-            throw new RuntimeException("Can't set year " + year + " in dropdown menu!");
+            throw new RuntimeException(
+                    "Can't select nonexistent year " + year + " in dropdown menu!");
         
         currentMonthLabel.setText(MONTH_FORMAT_LABEL.format(currentMonth));
 
@@ -377,11 +416,15 @@ public class ListBoxMonthSelector extends MonthSelector {
     }
     
     private boolean hasPrevMonth(){
-        return getCurrentMonth() > 1 || hasPrevYear();
+        Date prevMonth = CalendarUtil.copyDate(getModel().getCurrentMonth());
+        CalendarUtil.addMonthsToDate(prevMonth, -1);
+        return isMonthInRange(prevMonth);
     }
     
     private boolean hasNextMonth(){
-        return getCurrentMonth() < 12 || hasNextYear();
+        Date nextMonth = CalendarUtil.copyDate(getModel().getCurrentMonth());
+        CalendarUtil.addMonthsToDate(nextMonth, 1);
+        return isMonthInRange(nextMonth);
     }
     
     private boolean hasPrevYear(){
@@ -444,19 +487,9 @@ public class ListBoxMonthSelector extends MonthSelector {
     protected void setCurrentYear(int year){
         getModel().getCurrentMonth().setYear(year - 1900);
     }
-    
-    protected void setCurrentMonth(int year, int month){
-        Date date = getModel().getCurrentMonth();
-        date.setYear(year);
-        date.setMonth(month-1);
-    }
-    
+
     protected int getCurrentYear(){
         return getModel().getCurrentMonth().getYear() + 1900;
-    }
-    
-    protected int getCurrentMonth(){
-        return getModel().getCurrentMonth().getMonth() + 1;
     }
     
     /**
@@ -486,5 +519,27 @@ public class ListBoxMonthSelector extends MonthSelector {
         this.dropdownYearsCount = 0;
     }
     
+    
+    public boolean isDateInRange(Date date) {
+        if(!fixedRange) return true;
+        return !(date.before(minDate) || date.after(maxDate));
+    }
+    
+    public boolean isMonthInRange(Date month) {
+        if(!fixedRange) return true;
+        
+        Date minMonth = CalendarUtil.copyDate(minDate);
+        CalendarUtil.setToFirstDayOfMonth(minMonth);
+        
+        Date maxMonth = CalendarUtil.copyDate(maxDate);
+        CalendarUtil.setToFirstDayOfMonth(maxMonth);
+        
+        return !(month.before(minMonth) || month.after(maxMonth));
+    }
+        
+    public boolean isYearInRange(int year) {
+        if(!fixedRange) return true;
+        return !(year < minYear || year > maxYear);
+    }
     
 }

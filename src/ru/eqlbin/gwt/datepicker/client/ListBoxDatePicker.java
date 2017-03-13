@@ -1,5 +1,7 @@
 package ru.eqlbin.gwt.datepicker.client;
 
+import java.util.Date;
+
 import com.google.gwt.user.datepicker.client.CalendarModel;
 import com.google.gwt.user.datepicker.client.DatePicker;
 import com.google.gwt.user.datepicker.client.DefaultCalendarView;
@@ -31,6 +33,12 @@ public class ListBoxDatePicker extends DatePicker {
         monthSelector.setFixedYearsRange(minYear, maxYear);
         ((DefaultCalendarView) getView()).refresh();
     }
+    
+    public void setFixedDateRange(Date minDate, Date maxDate) {
+        monthSelector.setFixedDateRange(minDate, maxDate);
+        ((DefaultCalendarView) getView()).refresh();
+    }
+
 
     /**
      * Sets the floating range of years
