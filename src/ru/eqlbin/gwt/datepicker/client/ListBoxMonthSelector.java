@@ -244,8 +244,15 @@ public class ListBoxMonthSelector extends MonthSelector {
             int minYear = getMinYear();
             int maxYear = getMaxYear();
             
-            if(startYear < minYear) startYear = minYear;
-            if(endYear > maxYear) endYear = maxYear;
+            if(startYear < minYear) {
+                startYear = minYear;
+                endYear = startYear + dropdownYearsCount;
+            }
+            
+            if(endYear > maxYear) {
+                endYear = maxYear;
+                startYear = endYear - dropdownYearsCount;
+            }
         } 
 
         int size = endYear - startYear + 1;
