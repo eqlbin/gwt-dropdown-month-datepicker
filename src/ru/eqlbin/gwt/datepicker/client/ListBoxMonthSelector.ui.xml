@@ -2,24 +2,38 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
   xmlns:g="urn:import:com.google.gwt.user.client.ui">
   <ui:style>
-  .button {
-  	padding: 0px 4px;
-  }
   
   .root-panel {
   	width: 100%;
   }
+
+  .button {
+    font-size: 1.2em;
+    line-height: 0.6em;
+    color: #555;
+    cursor: hand;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0px 4px;
+    outline: none;
+  }
+  
+  .button:HOVER {
+    color: #ff0000;
+  }
+  
+  
   </ui:style>
   <g:HorizontalPanel addStyleNames="{style.root-panel}"
-    horizontalAlignment="CENTER">
+    horizontalAlignment="CENTER" >
 
     <g:Grid>
       <g:row>
         <g:customCell>
-          <g:Button addStyleNames="{style.button}" ui:field="prevYearButton">&lt;&lt;</g:Button>
+          <g:PushButton styleName="{style.button}" ui:field="prevYearButton">&lt;&lt;</g:PushButton>
         </g:customCell>
         <g:customCell>
-          <g:Button addStyleNames="{style.button}" ui:field="prevMonthButton">&lt;</g:Button>
+          <g:PushButton styleName="{style.button}" ui:field="prevMonthButton">&lt;</g:PushButton>
         </g:customCell>
 
         <g:customCell>
@@ -35,10 +49,10 @@
           <g:customCell><g:ListBox ui:field="monthsSelect" /></g:customCell> -->
 
         <g:customCell>
-          <g:Button addStyleNames="{style.button}" ui:field="nextMonthButton">&gt;</g:Button>
+          <g:PushButton styleName="{style.button}" ui:field="nextMonthButton">&gt;</g:PushButton>
         </g:customCell>
         <g:customCell>
-          <g:Button addStyleNames="{style.button}" ui:field="nextYearButton">&gt;&gt;</g:Button>
+          <g:PushButton styleName="{style.button}" ui:field="nextYearButton">&gt;&gt;</g:PushButton>
         </g:customCell>
       </g:row>
     </g:Grid>

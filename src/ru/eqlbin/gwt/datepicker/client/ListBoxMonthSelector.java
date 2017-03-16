@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DatePicker;
@@ -69,11 +70,11 @@ public class ListBoxMonthSelector extends MonthSelector {
     private final ListBox monthsDropdown = new ListBox();
     private final Label currentMonthLabel = new Label();
 
-    @UiField Button prevMonthButton;
-    @UiField Button nextMonthButton;
+    @UiField PushButton prevMonthButton;
+    @UiField PushButton nextMonthButton;
     
-    @UiField Button prevYearButton;
-    @UiField Button nextYearButton;
+    @UiField PushButton prevYearButton;
+    @UiField PushButton nextYearButton;
     
     private static ListBoxMonthSelectorUiBinder uiBinder = GWT.create(ListBoxMonthSelectorUiBinder.class);
 
