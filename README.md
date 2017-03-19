@@ -1,4 +1,4 @@
-ListBoxDatePicker for GWT
+DropdownMonthDatePicker for GWT
 ========================
 
 Date picker component which allows to select the current month 
