@@ -16,7 +16,6 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -43,7 +42,7 @@ import com.google.gwt.user.datepicker.client.MonthSelector;
  *
  */
 @SuppressWarnings("deprecation")
-public class ListBoxMonthSelector extends MonthSelector {
+public class DropdownMonthSelector extends MonthSelector {
 
     private static final DateTimeFormat MONTH_FORMAT = 
                              DateTimeFormat.getFormat("yyyy-MMM");
@@ -54,8 +53,8 @@ public class ListBoxMonthSelector extends MonthSelector {
     private static final int DEFAULT_DROPDOWN_YEARS_COUNT = 31;
     
     // localized short month names
-    String[] monthNames = LocaleInfo.getCurrentLocale()
-            .getDateTimeFormatInfo().monthsShortStandalone();
+    private String[] monthNames = LocaleInfo.getCurrentLocale()
+                                      .getDateTimeFormatInfo().monthsShortStandalone();
     
     private Date minDate;
     private Date maxDate;
@@ -76,11 +75,11 @@ public class ListBoxMonthSelector extends MonthSelector {
     @UiField PushButton prevYearButton;
     @UiField PushButton nextYearButton;
     
-    private static ListBoxMonthSelectorUiBinder uiBinder = GWT.create(ListBoxMonthSelectorUiBinder.class);
+    private static DropdownMonthSelectorUiBinder uiBinder = GWT.create(DropdownMonthSelectorUiBinder.class);
 
-    interface ListBoxMonthSelectorUiBinder extends UiBinder<Widget, ListBoxMonthSelector> {}
+    interface DropdownMonthSelectorUiBinder extends UiBinder<Widget, DropdownMonthSelector> {}
 
-    public ListBoxMonthSelector() {
+    public DropdownMonthSelector() {
         initWidget(uiBinder.createAndBindUi(this));
     }
     

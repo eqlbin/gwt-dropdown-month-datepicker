@@ -13,14 +13,14 @@ import com.google.gwt.user.datepicker.client.DefaultCalendarView;
  * @author eqlbin
  *
  */
-public class ListBoxDatePicker extends DatePicker {
+public class DropdownMonthDatePicker extends DatePicker {
 
-    private ListBoxMonthSelector monthSelector;
+    private DropdownMonthSelector monthSelector;
     
-    public ListBoxDatePicker() {
-        super(new ListBoxMonthSelector(), new DefaultCalendarView(),
+    public DropdownMonthDatePicker() {
+        super(new DropdownMonthSelector(), new DefaultCalendarView(),
                 new CalendarModel());
-        monthSelector = (ListBoxMonthSelector) getMonthSelector();
+        monthSelector = (DropdownMonthSelector) getMonthSelector();
     }
     
     public void setDateRange(Date minDate, Date maxDate) {

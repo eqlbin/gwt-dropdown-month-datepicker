@@ -19,17 +19,17 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 
-import ru.eqlbin.gwt.datepicker.client.ListBoxDatePicker;
+import ru.eqlbin.gwt.datepicker.client.DropdownMonthDatePicker;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class ListBoxDatePickerExample implements EntryPoint {
+public class DropdownMonthDatePickerExample implements EntryPoint {
     
     private static final DateTimeFormat DATE_FORMAT = DateTimeFormat.getFormat("yyyy-MM-dd");
     
-    private ListBoxDatePicker datePickerFloating;
-    private ListBoxDatePicker datePickerFixed;
+    private DropdownMonthDatePicker datePickerFloating;
+    private DropdownMonthDatePicker datePickerFixed;
     
     /**
      * This is the entry point method.
@@ -42,7 +42,7 @@ public class ListBoxDatePickerExample implements EntryPoint {
 
     public Widget createFloatingDatePickerExample() {
         
-        datePickerFloating = new ListBoxDatePicker();
+        datePickerFloating = new DropdownMonthDatePicker();
         
         final Label selectedDateLabel = new Label();
         
@@ -77,7 +77,7 @@ public class ListBoxDatePickerExample implements EntryPoint {
         CalendarUtil.setToFirstDayOfMonth(maxDate);
         CalendarUtil.addDaysToDate(maxDate, -1);
         
-        datePickerFixed = new ListBoxDatePicker();
+        datePickerFixed = new DropdownMonthDatePicker();
         datePickerFixed.setDateRange(minDate, maxDate);
         
         final Label minYearLabel = new Label("Min date:"); 
