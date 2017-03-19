@@ -3,8 +3,8 @@
 /.classpath
 /.project
 /target/
-/example/gwt-unitCache/
-/example/WebContent/DropdownMonthDatePickerExample/
-/example/WebContent/WEB-INF/classes/
-/example/WebContent/WEB-INF/deploy/
-/example/WebContent/WEB-INF/lib/
+src/main/gwt-unitCache/
+src/main/webapp/DropdownMonthDatePickerExample/
+src/main/webapp/WEB-INF/classes/
+src/main/webapp/WEB-INF/deploy/
+src/main/webapp/WEB-INF/lib/
