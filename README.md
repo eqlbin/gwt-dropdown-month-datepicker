@@ -7,7 +7,7 @@ of the calendar, using the drop-down list for setting the month and year.
 # Usage
 
 ```xml
-<inherits name='ru.eqlbin.gwt.datepicker.ListBoxDatePicker'/>
+<inherits name='ru.eqlbin.gwt.datepicker.DropdownMonthDatePicker'/>
 ```
 
 ```java
