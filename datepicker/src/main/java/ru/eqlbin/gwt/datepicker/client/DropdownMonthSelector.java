@@ -14,8 +14,10 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -43,12 +45,18 @@ import com.google.gwt.user.datepicker.client.MonthSelector;
  */
 @SuppressWarnings("deprecation")
 public class DropdownMonthSelector extends MonthSelector {
-
+    
+    interface UiStyle extends CssResource {
+        String monthLabelCell();
+    }
+    
+    @UiField UiStyle style;
+    
     private static final DateTimeFormat MONTH_FORMAT = 
-                             DateTimeFormat.getFormat("yyyy-MMM");
+                                     DateTimeFormat.getFormat("yyyy-MMM");
 
     private static final DateTimeFormat MONTH_FORMAT_LABEL = 
-            DateTimeFormat.getFormat("yyyy MMM");
+                                     DateTimeFormat.getFormat("yyyy MMM");
     
     private static final int DEFAULT_DROPDOWN_YEARS_COUNT = 31;
     
@@ -69,6 +77,8 @@ public class DropdownMonthSelector extends MonthSelector {
     private final ListBox monthsDropdown = new ListBox();
     private final Label currentMonthLabel = new Label();
 
+    @UiField Grid grid;
+    
     @UiField PushButton prevMonthButton;
     @UiField PushButton nextMonthButton;
     
@@ -85,10 +95,10 @@ public class DropdownMonthSelector extends MonthSelector {
     
     @Override
     protected void setup() {
+        setCurrentMonthLabelCellStyle();
         initYearsDropdown();
         initMonthsDropdown();
         initButtons(); 
-        
         addRangeChecksForDatepicker();
     }
 
@@ -96,7 +106,12 @@ public class DropdownMonthSelector extends MonthSelector {
     protected void refresh() {
         updateUI();
     }
-
+    
+    private void setCurrentMonthLabelCellStyle() {
+        // Setting the style from the ui.xml (Cell can't have a ui:field attribute)
+        grid.getCellFormatter().getElement(0, 2).addClassName(style.monthLabelCell());
+    }
+    
     /**
      * Initializes the {@link #yearsDropdown}
      */

@@ -1,59 +1,76 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
   xmlns:g="urn:import:com.google.gwt.user.client.ui">
-  <ui:style>
+  <ui:style type="ru.eqlbin.gwt.datepicker.client.DropdownMonthSelector.UiStyle">
   
   .root-panel {
   	width: 100%;
   }
 
+  .grid {
+    width: 100%;
+   }
+
   .button {
-    font-size: 1.2em;
+    font-size: 1.1em;
     line-height: 0.6em;
-    color: #555;
-    cursor: hand;
+    color: #333;
     cursor: pointer;
     font-weight: bold;
     padding: 0px 4px;
     outline: none;
   }
-  
-  .button:HOVER {
-    color: #ff0000;
+
+  .left-button {
+    text-align: left;
   }
   
+  .right-button {
+    text-align: right;
+  }
+  
+  .button-up-disabled {
+	  color: #999;
+  }
+  
+  .button.button-up-hovering {
+    color: #007af9;
+  }
+  
+  .button.button-down-hovering {
+    color: #007af9;
+  }
+  
+  .monthLabelCell {
+	  font-weight: bold;
+	  width: 100%;
+  }
   
   </ui:style>
   <g:HorizontalPanel addStyleNames="{style.root-panel}"
     horizontalAlignment="CENTER" >
 
-    <g:Grid>
+    <g:Grid addStyleNames="{style.grid}" ui:field="grid">
       <g:row>
+      
         <g:customCell>
-          <g:PushButton styleName="{style.button}" ui:field="prevYearButton">&lt;&lt;</g:PushButton>
+          <g:PushButton styleName="{style.button} {style.left-button}" ui:field="prevYearButton">&lt;&lt;</g:PushButton>
         </g:customCell>
         <g:customCell>
-          <g:PushButton styleName="{style.button}" ui:field="prevMonthButton">&lt;</g:PushButton>
+          <g:PushButton styleName="{style.button} {style.left-button}" ui:field="prevMonthButton">&lt;</g:PushButton>
+        </g:customCell>
+
+        <g:customCell ui:field="monthCell">
+          <g:HorizontalPanel ui:field="currentMonthPanel" horizontalAlignment="CENTER" spacing="4" />
         </g:customCell>
 
         <g:customCell>
-          <g:HorizontalPanel ui:field="currentMonthPanel"  horizontalAlignment="CENTER" spacing="4">
-<!--             <g:ListBox ui:field="yearsDropdown" />
-            <g:ListBox ui:field="monthsDropdown" />
-            <g:Label ui:field="currentMonthLabel" visible="false"/> -->
-          </g:HorizontalPanel>
-        </g:customCell>
-
-
-        <!-- <g:customCell><g:ListBox ui:field="yearsSelect" /></g:customCell> 
-          <g:customCell><g:ListBox ui:field="monthsSelect" /></g:customCell> -->
-
-        <g:customCell>
-          <g:PushButton styleName="{style.button}" ui:field="nextMonthButton">&gt;</g:PushButton>
+          <g:PushButton styleName="{style.button} {style.right-button}" ui:field="nextMonthButton">&gt;</g:PushButton>
         </g:customCell>
         <g:customCell>
-          <g:PushButton styleName="{style.button}" ui:field="nextYearButton">&gt;&gt;</g:PushButton>
+          <g:PushButton styleName="{style.button} {style.right-button}" ui:field="nextYearButton">&gt;&gt;</g:PushButton>
         </g:customCell>
+        
       </g:row>
     </g:Grid>
 
