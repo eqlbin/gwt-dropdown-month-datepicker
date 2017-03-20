@@ -207,6 +207,10 @@ public class DropdownMonthSelector extends MonthSelector {
     
     public void setDateRange(Date minDate, Date maxDate) {
 
+        if(maxDate.before(minDate))
+            throw new IllegalArgumentException(
+                    "The value of the maxDate must not be before value of the minDate!");
+        
         this.minDate = CalendarUtil.copyDate(minDate);
         CalendarUtil.resetTime(this.minDate);
         this.maxDate = CalendarUtil.copyDate(maxDate);
@@ -225,6 +229,8 @@ public class DropdownMonthSelector extends MonthSelector {
     }
     
     public void setDropdownYearsCount(int dropdownYearsCount) {
+        if(dropdownYearsCount < 1)
+            throw new IllegalArgumentException("The value of the dropdownYearsCount must be > 1!");
         this.dropdownYearsCount = dropdownYearsCount;
         refreshAll();
     }
