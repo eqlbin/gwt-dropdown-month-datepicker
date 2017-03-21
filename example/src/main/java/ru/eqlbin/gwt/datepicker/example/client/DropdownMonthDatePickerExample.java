@@ -141,6 +141,7 @@ public class DropdownMonthDatePickerExample implements EntryPoint {
         final Button setVisibleYearCountButton = new Button("setVisibleYearCount");
         
         final TextBox yearCountInput = new TextBox();
+        yearCountInput.setValue(datePickerFixed.getVisibleYearCount()+"");
         
         Grid grid = new Grid(2, 2);
         grid.setCellSpacing(10);
