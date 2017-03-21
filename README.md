@@ -3,6 +3,7 @@ DropdownMonthDatePicker for GWT
 
 Date picker component which allows to select the current month 
 of the calendar, using the drop-down list for setting the month and year.
+In addition to this, it supports a fixed date range.
 
 # Usage
 
@@ -18,8 +19,8 @@ datePickerFloating.setVisibleYearCount(yearsCount);
 
 // Fixed range of years
 DropdownMonthDatePicker datePickerFixed = new DropdownMonthDatePicker();
-int minYear = 2010;
-int maxYear = 2030;
+Date minDate = new Date(2010-1900, 0, 1);
+Date maxDate = new Date(2029-1900, 11, 31);
 int yearsCount = 10;
 datePickerFixed.setDateRange(minDate, maxDate);
 datePickerFixed.setVisibleYearCount(yearsCount);
@@ -42,4 +43,4 @@ datePicker.setYearArrowsVisible(true);
 ```
 
 So, now this project is just an example of how to create your own MonthSelector
-and how to implement the fixed date range.
+and how to implement a fixed date range.
