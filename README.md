@@ -9,6 +9,10 @@ In addition to this, it supports a fixed date range.
 
 http://eqlbin.github.io/gwt-dropdown-month-datepicker/demo/
 
+# Screenshot
+
+![Screenshot](https://github.com/eqlbin/gwt-listbox-datepicker/raw/master/screenshots/screenshot.png)
+
 # Building
 
 ```bash
@@ -16,39 +20,42 @@ git clone https://github.com/eqlbin/gwt-dropdown-month-datepicker.git
 cd gwt-dropdown-month-datepicker
 mvn package
 ```
-## JAR with DatePicker widget
+* JAR with DatePicker widget
 
-* gwt-dropdown-month-datepicker/datepicker/target/dropdown-month-datepicker-1.0-SNAPSHOT.jar
+  *gwt-dropdown-month-datepicker/datepicker/target/dropdown-month-datepicker-1.0-SNAPSHOT.jar*
 
-## WAR with demo
+* WAR with demo
  
-* gwt-dropdown-month-datepicker/example/target/dropdown-month-datepicker-example-1.0-SNAPSHOT.war
-
+  *gwt-dropdown-month-datepicker/example/target/dropdown-month-datepicker-example-1.0-SNAPSHOT.war*
 
 # Usage
 
-```xml
-<inherits name='ru.eqlbin.gwt.datepicker.DropdownMonthDatePicker'/>
-```
+1. Put the JAR with the DropdownMonthDatePicker widget into your classpath
 
-```java
-// Floating range of years
-int yearsCount = 10;
-DropdownMonthDatePicker datePickerFloating = new DropdownMonthDatePicker();
-datePickerFloating.setVisibleYearCount(yearsCount);
+   For example, *WEB-INF/lib*
 
-// Fixed range of years
-DropdownMonthDatePicker datePickerFixed = new DropdownMonthDatePicker();
-Date minDate = new Date(2010-1900, 0, 1);
-Date maxDate = new Date(2029-1900, 11, 31);
-int yearsCount = 10;
-datePickerFixed.setDateRange(minDate, maxDate);
-datePickerFixed.setVisibleYearCount(yearsCount);
-```
+2. Inherit the DropdownMonthDatePicker module into your \*.gwt.xml 
 
-# Screenshot
+   ```xml
+   <inherits name='ru.eqlbin.gwt.datepicker.DropdownMonthDatePicker'/>
+   ```
+   
+3. Write the code
 
-![alt tag](https://github.com/eqlbin/gwt-listbox-datepicker/raw/master/screenshots/screenshot.png)
+   ```java
+   // Floating date range
+   int yearsCount = 10;
+   DropdownMonthDatePicker datePickerFloating = new DropdownMonthDatePicker();
+   datePickerFloating.setVisibleYearCount(yearsCount);
+
+   // Fixed date range
+   DropdownMonthDatePicker datePickerFixed = new DropdownMonthDatePicker();
+   Date minDate = new Date(2010-1900, 0, 1);
+   Date maxDate = new Date(2029-1900, 11, 31);
+   datePickerFixed.setDateRange(minDate, maxDate);
+   // yearsCount can also be used with a fixed date range
+   datePickerFixed.setVisibleYearCount(yearsCount);
+   ```
 
 # Note
 
