@@ -5,6 +5,26 @@ Date picker component which allows to select the current month
 of the calendar, using the drop-down list for setting the month and year.
 In addition to this, it supports a fixed date range.
 
+# Demo
+
+http://eqlbin.github.io/gwt-dropdown-month-datepicker/demo/
+
+# Building
+
+```bash
+git clone https://github.com/eqlbin/gwt-dropdown-month-datepicker.git
+cd gwt-dropdown-month-datepicker
+mvn package
+```
+## JAR with DatePicker widget
+
+* gwt-dropdown-month-datepicker/datepicker/target/dropdown-month-datepicker-1.0-SNAPSHOT.jar
+
+## WAR with demo
+ 
+* gwt-dropdown-month-datepicker/example/target/dropdown-month-datepicker-example-1.0-SNAPSHOT.war
+
+
 # Usage
 
 ```xml
