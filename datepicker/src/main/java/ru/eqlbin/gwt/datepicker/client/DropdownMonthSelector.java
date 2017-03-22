@@ -48,6 +48,7 @@ public class DropdownMonthSelector extends MonthSelector {
     
     interface UiStyle extends CssResource {
         String monthLabelCell();
+        String buttonDisabled();
     }
     
     @UiField UiStyle style;
@@ -384,7 +385,7 @@ public class DropdownMonthSelector extends MonthSelector {
         prevYearButton.setVisible(yearsButtonsVisible);
         nextYearButton.setVisible(yearsButtonsVisible);
         
-        updateNextButtonsState();
+        updateButtonsState();
     }
     
     /**
@@ -471,30 +472,38 @@ public class DropdownMonthSelector extends MonthSelector {
         return dropdownYearsCount;
     }
     
-    private void updateNextButtonsState(){
+    private void updateButtonsState(){
 
         if(!hasNextMonth()) {
             nextMonthButton.setEnabled(false);
+            nextMonthButton.getElement().addClassName(style.buttonDisabled());
         } else {
             nextMonthButton.setEnabled(true);
+            nextMonthButton.getElement().removeClassName(style.buttonDisabled());
         }
         
         if(!hasNextYear()) {
             nextYearButton.setEnabled(false);
+            nextYearButton.getElement().addClassName(style.buttonDisabled());
         } else {
             nextYearButton.setEnabled(true);
+            nextYearButton.getElement().removeClassName(style.buttonDisabled());
         }
         
         if(!hasPrevMonth()) {
             prevMonthButton.setEnabled(false);
+            prevMonthButton.getElement().addClassName(style.buttonDisabled());
         } else {
             prevMonthButton.setEnabled(true);
+            prevMonthButton.getElement().removeClassName(style.buttonDisabled());
         }
         
         if(!hasPrevYear()) {
             prevYearButton.setEnabled(false);
+            prevYearButton.getElement().addClassName(style.buttonDisabled());
         } else {
             prevYearButton.setEnabled(true);
+            prevYearButton.getElement().removeClassName(style.buttonDisabled());
         }
     }
 
