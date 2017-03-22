@@ -266,19 +266,19 @@ public class DropdownMonthSelector extends MonthSelector {
             
             int minYear = getMinYear();
             int maxYear = getMaxYear();
-            int maxYearsCount = maxYear - minYear;
+            int maxYearsCount = maxYear - minYear + 1;
             
             if(dropdownYearsCount < maxYearsCount)
                 maxYearsCount = dropdownYearsCount;
             
             if(startYear < minYear) {
                 startYear = minYear;
-                endYear = startYear + maxYearsCount;
+                endYear = startYear + maxYearsCount - 1;
             }
             
             if(endYear > maxYear) {
                 endYear = maxYear;
-                startYear = endYear - maxYearsCount;
+                startYear = endYear - maxYearsCount + 1;
             }
         } 
 
