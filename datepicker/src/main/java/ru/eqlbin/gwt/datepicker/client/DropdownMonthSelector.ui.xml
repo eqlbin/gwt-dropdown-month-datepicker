@@ -20,6 +20,10 @@
     padding: 0px 4px;
     outline: none;
   }
+  
+  .button:HOVER{
+    color: #007af9;
+  }
 
   .left-button {
     text-align: left;
@@ -29,18 +33,14 @@
     text-align: right;
   }
   
-  .button-up-disabled {
+  .buttonDisabled {
 	  color: #999;
   }
   
-  .button.button-up-hovering {
-    color: #007af9;
+  .buttonDisabled:HOVER {
+    color: #999;
   }
-  
-  .button.button-down-hovering {
-    color: #007af9;
-  }
-  
+
   .monthLabelCell {
 	  font-weight: bold;
 	  width: 100%;
